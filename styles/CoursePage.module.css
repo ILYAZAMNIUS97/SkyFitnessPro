@@ -158,13 +158,19 @@
 }
 
 @media (max-width: 768px) {
+  .container {
+    padding: 0 16px 60px;
+  }
+
   .hero {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 28px;
+    margin-bottom: 50px;
   }
 
   .heroImage {
-    height: 300px;
+    height: 280px;
+    border-radius: 28px;
   }
 
   .title {
@@ -175,13 +181,102 @@
     font-size: 16px;
   }
 
+  .meta {
+    gap: 14px;
+    padding: 20px 0;
+  }
+
+  .metaItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .metaLabel {
+    font-size: 15px;
+  }
+
+  .metaValue {
+    font-size: 15px;
+  }
+
   .startButton {
     width: 100%;
+    padding: 14px 40px;
+    font-size: 16px;
     text-align: center;
   }
 
   .sectionTitle {
     font-size: 24px;
+    margin-bottom: 28px;
+  }
+
+  .workoutsSection {
+    margin-top: 50px;
+  }
+
+  .emptyText {
+    padding: 50px 16px;
+    font-size: 15px;
+  }
+
+  .notFound {
+    padding: 80px 16px;
+  }
+
+  .notFound h1 {
+    font-size: 36px;
+  }
+
+  .notFound p {
+    font-size: 16px;
+  }
+
+  .backButton {
+    padding: 14px 28px;
+    font-size: 15px;
   }
 }
 
+@media (max-width: 480px) {
+  .container {
+    padding: 0 12px 50px;
+  }
+
+  .hero {
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  .heroImage {
+    height: 240px;
+    border-radius: 24px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .description {
+    font-size: 15px;
+  }
+
+  .sectionTitle {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 360px) {
+  .heroImage {
+    height: 220px;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+
+  .sectionTitle {
+    font-size: 20px;
+  }
+}

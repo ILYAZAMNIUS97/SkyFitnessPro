@@ -19,6 +19,10 @@ export default function CoursePage({ course }: CoursePageProps) {
       <Layout>
         <Head>
           <title>Курс не найден - SkyFitnessPro</title>
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=5.0"
+          />
         </Head>
         <div className={styles.container}>
           <div className={styles.notFound}>
@@ -38,6 +42,7 @@ export default function CoursePage({ course }: CoursePageProps) {
       <Head>
         <title>{course.nameRU} - SkyFitnessPro</title>
         <meta name="description" content={course.description} />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
       </Head>
 
       <div className={styles.container}>

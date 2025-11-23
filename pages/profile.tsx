@@ -8,6 +8,7 @@ export default function Profile() {
       <Head>
         <title>Профиль - SkyFitnessPro</title>
         <meta name="description" content="Личный кабинет пользователя" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
       </Head>
 
       <div className={styles.container}>
@@ -28,4 +29,3 @@ export default function Profile() {
     </Layout>
   );
 }
-

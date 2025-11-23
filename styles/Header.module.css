@@ -109,22 +109,51 @@
   }
 
   .container {
-    padding: 0 20px;
+    padding: 0 16px;
   }
 
   .logoSubtext {
     display: none;
   }
 
+  .logoImage {
+    height: 28px;
+  }
+
   .nav {
-    gap: 20px;
+    gap: 16px;
   }
 
   .navLink {
-    font-size: 14px;
+    display: none;
   }
 
   .loginButton {
-    font-size: 16px;
+    width: 85px;
+    height: 44px;
+    padding: 12px 20px;
+    font-size: 14px;
+    border-radius: 46px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    height: 56px;
+  }
+
+  .container {
+    padding: 0 12px;
+  }
+
+  .logoImage {
+    height: 24px;
+  }
+
+  .loginButton {
+    width: 75px;
+    height: 40px;
+    padding: 10px 16px;
+    font-size: 13px;
   }
 }

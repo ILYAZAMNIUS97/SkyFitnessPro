@@ -20,7 +20,7 @@ export default function Home({ courses }: HomeProps) {
           name="description"
           content="Приложение для домашних тренировок с личным кабинетом и отслеживанием прогресса"
         />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

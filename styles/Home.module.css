@@ -135,33 +135,70 @@
 
 @media (max-width: 768px) {
   .container {
-    padding: 0 20px;
+    padding: 0 16px;
   }
 
   .hero {
-    padding: 40px 0;
-    margin-bottom: 40px;
+    padding: 30px 0 20px;
+    margin-bottom: 30px;
     flex-direction: column;
+    gap: 20px;
     width: 100%;
   }
 
   .title {
-    font-size: 36px;
+    font-size: 32px;
+    line-height: 110%;
     width: 100%;
   }
 
   .heroCallout {
-    font-size: 24px;
-    max-width: 100%;
+    display: none;
+  }
+
+  .courses {
+    margin-top: 0;
   }
 
   .coursesTitle {
     font-size: 24px;
+    margin-bottom: 24px;
   }
 
   .coursesGrid {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 20px;
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 12px;
+  }
+
+  .hero {
+    padding: 20px 0 16px;
+    margin-bottom: 24px;
+    gap: 16px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .coursesTitle {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .coursesGrid {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .title {
+    font-size: 24px;
   }
 }
