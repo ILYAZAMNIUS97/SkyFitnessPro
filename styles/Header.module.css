@@ -105,7 +105,7 @@
 
 @media (max-width: 768px) {
   .header {
-    height: 60px;
+    height: 96px;
   }
 
   .container {
@@ -117,7 +117,8 @@
   }
 
   .logoImage {
-    height: 28px;
+    height: 35px;
+    width: auto;
   }
 
   .nav {
@@ -129,9 +130,9 @@
   }
 
   .loginButton {
-    width: 85px;
-    height: 44px;
-    padding: 12px 20px;
+    width: 83px;
+    height: 36px;
+    padding: 8px 16px;
     font-size: 14px;
     border-radius: 46px;
   }
