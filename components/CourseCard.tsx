@@ -17,7 +17,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
     <div className={styles.card}>
       <div
         className={styles.imageWrapper}
-        style={{ backgroundColor: course.backgroundColor || '#f0f0f0' }}
+        style={{ backgroundColor: course.backgroundColor || '#FFC700' }}
       >
         <Link href={`/course/${course._id}`}>
           <img src={course.image} alt={course.nameRU} className={styles.image} />
@@ -31,20 +31,20 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
           <h3 className={styles.title}>{course.nameRU}</h3>
         </Link>
         <div className={styles.meta}>
-          <div className={styles.metaItem}>
-            <span className={styles.metaIcon}>📅</span>
-            <span>
-              {course.durationInDays} {course.durationInDays === 1 ? 'день' : 'дней'}
-            </span>
+          <div className={styles.metaRow}>
+            <div className={styles.metaItem}>
+              <img src="/img/icon/Calendar.svg" alt="" className={styles.metaIcon} />
+              <span>{course.durationInDays} дней</span>
+            </div>
+            <div className={styles.metaItem}>
+              <img src="/img/icon/time.svg" alt="" className={styles.metaIcon} />
+              <span>
+                {course.dailyDurationInMinutes.from}-{course.dailyDurationInMinutes.to} мин/день
+              </span>
+            </div>
           </div>
           <div className={styles.metaItem}>
-            <span className={styles.metaIcon}>⏱</span>
-            <span>
-              {course.dailyDurationInMinutes.from}-{course.dailyDurationInMinutes.to} мин/день
-            </span>
-          </div>
-          <div className={styles.difficulty}>
-            <span className={styles.metaIcon}>📊</span>
+            <img src="/img/icon/mingcute_signal-fill.svg" alt="" className={styles.metaIcon} />
             <span>Сложность</span>
           </div>
         </div>

@@ -33,7 +33,6 @@ export default function Home({ courses }: HomeProps) {
         </section>
 
         <section className={styles.courses}>
-          <h2 className={styles.coursesTitle}>Все курсы</h2>
           {courses.length === 0 ? (
             <div className={styles.empty}>
               <p>Курсы пока не добавлены. Скоро здесь появятся новые программы тренировок!</p>

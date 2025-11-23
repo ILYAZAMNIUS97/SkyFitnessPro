@@ -80,9 +80,10 @@
 
 .coursesGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 360px);
   gap: 40px;
   max-width: 1200px;
+  justify-content: flex-start;
 }
 
 .empty {
@@ -98,10 +99,17 @@
   color: var(--text-secondary);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
+  .coursesGrid {
+    grid-template-columns: repeat(2, 360px);
+    gap: 30px;
+  }
+}
+
+@media (max-width: 900px) {
   .coursesGrid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 30px;
+    gap: 24px;
   }
 }
 
