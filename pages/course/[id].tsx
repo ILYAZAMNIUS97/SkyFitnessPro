@@ -36,23 +36,29 @@ export default function CoursePage({ course }: CoursePageProps) {
   return (
     <Layout>
       <Head>
-        <title>{course.title} - SkyFitnessPro</title>
+        <title>{course.nameRU} - SkyFitnessPro</title>
         <meta name="description" content={course.description} />
       </Head>
 
       <div className={styles.container}>
         <div className={styles.hero}>
           <div className={styles.heroImage}>
-            <img src={course.image} alt={course.title} />
+            <img src={course.image} alt={course.nameRU} />
           </div>
           <div className={styles.heroContent}>
-            <h1 className={styles.title}>{course.title}</h1>
+            <h1 className={styles.title}>{course.nameRU}</h1>
             <p className={styles.description}>{course.description}</p>
             <div className={styles.meta}>
               <div className={styles.metaItem}>
                 <span className={styles.metaLabel}>Длительность:</span>
                 <span className={styles.metaValue}>
-                  {course.duration} {course.duration === 1 ? 'день' : 'дней'}
+                  {course.durationInDays} {course.durationInDays === 1 ? 'день' : 'дней'}
+                </span>
+              </div>
+              <div className={styles.metaItem}>
+                <span className={styles.metaLabel}>Время:</span>
+                <span className={styles.metaValue}>
+                  {course.dailyDurationInMinutes.from}-{course.dailyDurationInMinutes.to} мин/день
                 </span>
               </div>
               <div className={styles.metaItem}>
@@ -101,9 +107,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const serializedCourse = {
       ...course,
       _id: course._id.toString(),
-      createdAt: course.createdAt.toISOString(),
-      updatedAt: course.updatedAt.toISOString(),
-      workouts: course.workouts.map((id) => id.toString()),
+      createdAt: course.createdAt?.toISOString(),
+      updatedAt: course.updatedAt?.toISOString(),
+      workouts: course.workouts.map((id: any) => id.toString()),
     };
 
     return {
@@ -120,4 +126,3 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 };
-

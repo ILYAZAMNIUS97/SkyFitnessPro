@@ -57,12 +57,12 @@ export const getServerSideProps: GetServerSideProps = async () => {
     const courses = await Course.find({}).sort({ createdAt: -1 }).lean();
 
     // Преобразуем MongoDB объекты в простые объекты для сериализации
-    const serializedCourses = courses.map((course) => ({
+    const serializedCourses = courses.map((course: any) => ({
       ...course,
       _id: course._id.toString(),
-      createdAt: course.createdAt.toISOString(),
-      updatedAt: course.updatedAt.toISOString(),
-      workouts: course.workouts.map((id) => id.toString()),
+      createdAt: course.createdAt?.toISOString(),
+      updatedAt: course.updatedAt?.toISOString(),
+      workouts: course.workouts.map((id: any) => id.toString()),
     }));
 
     return {

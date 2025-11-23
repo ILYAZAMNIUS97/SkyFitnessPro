@@ -4,8 +4,7 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  background-color: var(--bg-primary);
-  box-shadow: var(--shadow-sm);
+  background-color: #fafafa;
   height: 80px;
   display: flex;
   align-items: center;
@@ -39,10 +38,14 @@
 }
 
 .logoSubtext {
-  font-size: 13px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
   font-weight: 400;
-  color: var(--text-secondary);
-  line-height: 1.2;
+  font-style: normal;
+  line-height: 110%;
+  letter-spacing: 0px;
+  color: #000000;
+  opacity: 0.5;
 }
 
 .nav {
@@ -64,15 +67,22 @@
 }
 
 .loginButton {
-  padding: 12px 32px;
-  background-color: var(--primary-color);
+  width: 103px;
+  height: 52px;
+  padding: 16px 26px;
+  background: #bcec30;
   color: var(--text-primary);
   border: none;
-  border-radius: 50px;
+  border-radius: 46px;
   font-size: 18px;
   font-weight: 400;
   cursor: pointer;
   transition: var(--transition);
+  opacity: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .loginButton:hover {

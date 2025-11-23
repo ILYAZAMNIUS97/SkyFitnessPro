@@ -20,7 +20,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
         style={{ backgroundColor: course.backgroundColor || '#f0f0f0' }}
       >
         <Link href={`/course/${course._id}`}>
-          <img src={course.image} alt={course.title} className={styles.image} />
+          <img src={course.image} alt={course.nameRU} className={styles.image} />
         </Link>
         <button className={styles.addButton} onClick={handleAddClick} aria-label="Добавить курс">
           +
@@ -28,18 +28,20 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
       </div>
       <div className={styles.content}>
         <Link href={`/course/${course._id}`}>
-          <h3 className={styles.title}>{course.title}</h3>
+          <h3 className={styles.title}>{course.nameRU}</h3>
         </Link>
         <div className={styles.meta}>
           <div className={styles.metaItem}>
             <span className={styles.metaIcon}>📅</span>
             <span>
-              {course.duration} {course.duration === 1 ? 'день' : 'дней'}
+              {course.durationInDays} {course.durationInDays === 1 ? 'день' : 'дней'}
             </span>
           </div>
           <div className={styles.metaItem}>
             <span className={styles.metaIcon}>⏱</span>
-            <span>20-50 мин/день</span>
+            <span>
+              {course.dailyDurationInMinutes.from}-{course.dailyDurationInMinutes.to} мин/день
+            </span>
           </div>
           <div className={styles.difficulty}>
             <span className={styles.metaIcon}>📊</span>

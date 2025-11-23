@@ -1,14 +1,21 @@
 export interface ICourse {
   _id: string;
-  title: string;
+  nameRU: string;
+  nameEN: string;
   description: string;
   image: string;
-  duration: number; // в днях
-  difficulty: 'Начальный' | 'Средний' | 'Продвинутый';
+  directions: string[];
+  fitting: string[];
+  difficulty: string;
+  durationInDays: number;
+  dailyDurationInMinutes: {
+    from: number;
+    to: number;
+  };
   workouts: string[]; // ID тренировок
   backgroundColor?: string; // Цвет фона для изображения
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }
 
 export interface IWorkout {
@@ -24,9 +31,9 @@ export interface IWorkout {
 }
 
 export interface IExercise {
+  _id?: string;
   name: string;
-  quantity: number; // количество повторений или минут
-  unit: 'повторения' | 'минуты' | 'секунды';
+  quantity: number; // количество повторений
 }
 
 export interface IUser {

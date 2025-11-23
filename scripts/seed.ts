@@ -12,11 +12,19 @@ dotenv.config({ path: path.join(__dirname, '../.env.local') });
 
 // Импортируем модели
 const CourseSchema = new mongoose.Schema({
-  title: String,
+  nameRU: String,
+  nameEN: String,
   description: String,
   image: String,
-  duration: Number,
+  directions: [String],
+  fitting: [String],
   difficulty: String,
+  durationInDays: Number,
+  dailyDurationInMinutes: {
+    from: Number,
+    to: Number,
+  },
+  backgroundColor: String,
   workouts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Workout' }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
@@ -26,50 +34,87 @@ const Course = mongoose.models.Course || mongoose.model('Course', CourseSchema);
 
 const coursesData = [
   {
-    title: 'Йога',
+    nameRU: 'Йога',
+    nameEN: 'Yoga',
     description:
-      'Освойте основы йоги с нашим курсом для новичков. Улучшите гибкость, силу и баланс.',
+      'Практика хатха-йоги и медитации для начинающих. Последовательное освоение поз, работа с дыханием и релаксация. Идеально для тех, кто хочет улучшить гибкость, снять стресс и обрести внутреннюю гармонию.',
     image: '/img/1.jpg',
-    duration: 25,
+    directions: ['Для новичков', 'Женщинам', 'Гибкость', 'Баланс'],
+    fitting: ['Начинающие', 'Снятие стресса', 'Гибкость'],
     difficulty: 'Начальный',
+    durationInDays: 25,
+    dailyDurationInMinutes: {
+      from: 20,
+      to: 50,
+    },
     backgroundColor: '#FFC700',
     workouts: [],
   },
   {
-    title: 'Стретчинг',
+    nameRU: 'Стретчинг',
+    nameEN: 'Stretching',
     description:
-      'Развитие гибкости и улучшение подвижности суставов. Подходит для всех уровней подготовки.',
+      'Комплексные упражнения на растяжку для развития гибкости и улучшения подвижности суставов. Профилактика травм и улучшение осанки. Подходит для всех уровней подготовки.',
     image: '/img/2.jpg',
-    duration: 25,
+    directions: ['Для новичков', 'Гибкость', 'Восстановление'],
+    fitting: ['Все уровни', 'Растяжка', 'Восстановление'],
     difficulty: 'Начальный',
+    durationInDays: 25,
+    dailyDurationInMinutes: {
+      from: 20,
+      to: 50,
+    },
     backgroundColor: '#2EA5FC',
     workouts: [],
   },
   {
-    title: 'Фитнес',
+    nameRU: 'Фитнес',
+    nameEN: 'Fitness',
     description:
-      'Набор мышечной массы и увеличение силовых показателей с помощью комплексных упражнений.',
+      'Силовые и кардио тренировки для создания подтянутого тела. Комплексный подход к жиросжиганию и набору мышечной массы. Интенсивные упражнения для опытных спортсменов.',
     image: '/img/3.jpg',
-    duration: 25,
+    directions: ['Силовые', 'Кардио', 'Похудение', 'Женщинам'],
+    fitting: ['Средний уровень', 'Тонус', 'Энергия'],
     difficulty: 'Средний',
+    durationInDays: 25,
+    dailyDurationInMinutes: {
+      from: 20,
+      to: 50,
+    },
     backgroundColor: '#FF6D00',
     workouts: [],
   },
   {
-    title: 'Степ-аэробика',
-    description: 'Интенсивные кардио упражнения для сжигания калорий и улучшения выносливости.',
+    nameRU: 'Степ-аэробика',
+    nameEN: 'Step Aerobics',
+    description:
+      'Динамичные кардио тренировки с использованием степ-платформы. Эффективное жиросжигание, развитие координации и выносливости. Заряд энергии и бодрости на весь день.',
     image: '/img/4.jpg',
-    duration: 25,
+    directions: ['Кардио', 'Похудение', 'Координация', 'Выносливость'],
+    fitting: ['Средний уровень', 'Активность', 'Энергия'],
     difficulty: 'Средний',
+    durationInDays: 25,
+    dailyDurationInMinutes: {
+      from: 20,
+      to: 50,
+    },
     backgroundColor: '#FF6A5A',
     workouts: [],
   },
   {
-    title: 'Бодифлекс',
-    description: 'Сложные асаны и техники дыхания для опытных практиков. Выход на новый уровень.',
+    nameRU: 'Бодифлекс',
+    nameEN: 'Bodyflex',
+    description:
+      'Уникальная методика дыхательной гимнастики для глубокой проработки мышц и похудения. Сочетание правильного дыхания со статическими упражнениями. Для продвинутого уровня.',
     image: '/img/5.jpg',
-    duration: 25,
+    directions: ['Для продвинутых', 'Дыхание', 'Похудение', 'Тонус'],
+    fitting: ['Продвинутые', 'Специальная техника', 'Глубокая проработка'],
     difficulty: 'Продвинутый',
+    durationInDays: 25,
+    dailyDurationInMinutes: {
+      from: 20,
+      to: 50,
+    },
     backgroundColor: '#9A48F1',
     workouts: [],
   },
@@ -96,7 +141,7 @@ async function seed() {
     console.log('\n🎉 База данных успешно заполнена!');
     console.log('\nСозданные курсы:');
     courses.forEach((course, index) => {
-      console.log(`  ${index + 1}. ${course.title} (${course.difficulty})`);
+      console.log(`  ${index + 1}. ${course.nameRU} (${course.difficulty})`);
     });
 
     process.exit(0);

@@ -3,9 +3,14 @@ import { ICourse } from '@/types/course';
 
 const CourseSchema = new Schema<ICourse>(
   {
-    title: {
+    nameRU: {
       type: String,
-      required: [true, 'Название курса обязательно'],
+      required: [true, 'Название курса на русском обязательно'],
+      trim: true,
+    },
+    nameEN: {
+      type: String,
+      required: [true, 'Название курса на английском обязательно'],
       trim: true,
     },
     description: {
@@ -16,14 +21,31 @@ const CourseSchema = new Schema<ICourse>(
       type: String,
       required: [true, 'Изображение курса обязательно'],
     },
-    duration: {
-      type: Number,
-      required: [true, 'Продолжительность курса обязательна'],
+    directions: {
+      type: [String],
+      default: [],
+    },
+    fitting: {
+      type: [String],
+      default: [],
     },
     difficulty: {
       type: String,
-      enum: ['Начальный', 'Средний', 'Продвинутый'],
       required: [true, 'Уровень сложности обязателен'],
+    },
+    durationInDays: {
+      type: Number,
+      required: [true, 'Продолжительность курса обязательна'],
+    },
+    dailyDurationInMinutes: {
+      from: {
+        type: Number,
+        required: true,
+      },
+      to: {
+        type: Number,
+        required: true,
+      },
     },
     backgroundColor: {
       type: String,
