@@ -23,7 +23,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
           <img src={course.image} alt={course.nameRU} className={styles.image} />
         </Link>
         <button className={styles.addButton} onClick={handleAddClick} aria-label="Добавить курс">
-          +
+          <img src="/img/icon/plus.svg" alt="+" />
         </button>
       </div>
       <div className={styles.content}>

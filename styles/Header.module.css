@@ -12,9 +12,9 @@
 
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 140px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -90,12 +90,28 @@
   transform: translateY(-1px);
 }
 
+@media (max-width: 1200px) {
+  .container {
+    padding: 0 60px;
+  }
+}
+
+@media (max-width: 900px) {
+  .container {
+    padding: 0 40px;
+  }
+}
+
 @media (max-width: 768px) {
   .header {
     height: 60px;
   }
 
-  .logoText {
+  .container {
+    padding: 0 20px;
+  }
+
+  .logoSubtext {
     display: none;
   }
 
@@ -105,5 +121,9 @@
 
   .navLink {
     font-size: 14px;
+  }
+
+  .loginButton {
+    font-size: 16px;
   }
 }
