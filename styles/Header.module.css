@@ -46,6 +46,7 @@
   letter-spacing: 0px;
   color: #000000;
   opacity: 0.5;
+  font-variant-numeric: lining-nums proportional-nums;
 }
 
 .nav {

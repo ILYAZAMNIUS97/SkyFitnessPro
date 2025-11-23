@@ -11,11 +11,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className={styles.layout}>
       <Header />
-      <main className={styles.main}>{children}</main>
-      <ScrollToTop />
+      <main className={styles.main}>
+        {children}
+        <ScrollToTop />
+      </main>
     </div>
   );
 };
 
 export default Layout;
-
