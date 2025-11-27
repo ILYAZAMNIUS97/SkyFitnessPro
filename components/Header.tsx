@@ -80,20 +80,22 @@ const Header: React.FC<HeaderProps> = ({ onLoginClick, onLogout, user }) => {
                     <span className={styles.userDropdownName}>{user.name}</span>
                     <span className={styles.userDropdownEmail}>{user.email}</span>
                   </div>
-                  <button
-                    type="button"
-                    className={styles.userDropdownPrimary}
-                    onClick={handleProfileClick}
-                  >
-                    Мой профиль
-                  </button>
-                  <button
-                    type="button"
-                    className={styles.userDropdownSecondary}
-                    onClick={handleLogoutClick}
-                  >
-                    Выйти
-                  </button>
+                  <div className={styles.userDropdownActions}>
+                    <button
+                      type="button"
+                      className={styles.userDropdownPrimary}
+                      onClick={handleProfileClick}
+                    >
+                      Мой профиль
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.userDropdownSecondary}
+                      onClick={handleLogoutClick}
+                    >
+                      Выйти
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
