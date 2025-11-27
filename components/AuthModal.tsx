@@ -39,9 +39,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
           event.stopPropagation();
         }}
       >
-        <button className={styles.closeButton} onClick={onClose} aria-label="Закрыть окно">
-          ×
-        </button>
         <AuthCard onSuccess={handleSuccess} />
       </div>
     </div>
