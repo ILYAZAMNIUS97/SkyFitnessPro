@@ -179,6 +179,9 @@ export default function CoursePage({ course }: CoursePageProps) {
 
         {/* Начните путь к новому телу */}
         <section className={styles.ctaSection}>
+          <div className={styles.ctaVectorContainer}>
+            <img src="/img/vector-6084.png" alt="" className={styles.ctaVectorBack} />
+          </div>
           <div className={styles.ctaContent}>
             <h2 className={styles.ctaTitle}>
               Начните путь
@@ -202,7 +205,6 @@ export default function CoursePage({ course }: CoursePageProps) {
           </div>
           <div className={styles.ctaImage}>
             <div className={styles.ctaImageWrapper}>
-              <img src="/img/vector-6084.png" alt="" className={styles.ctaVectorBack} />
               <img src="/img/vector-6094.png" alt="" className={styles.ctaVectorFront} />
               <img
                 src="/img/runner.png"

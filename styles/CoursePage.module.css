@@ -128,6 +128,18 @@
   margin-top: 180px;
 }
 
+.ctaVectorContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 30px;
+  overflow: hidden;
+  z-index: 1;
+  pointer-events: none;
+}
+
 .ctaContent {
   z-index: 2;
 }
@@ -239,20 +251,20 @@
 
 .ctaVectorBack {
   position: absolute;
-  width: 670px;
-  height: 391px;
-  left: -165px;
-  top: 163px;
+  width: 600px;
+  height: 450px;
+  left: 490px;
+  top: 100px;
   z-index: 1;
-  transform: rotate(12.38deg);
+  transform: rotate(5deg);
 }
 
 .ctaVectorFront {
   position: absolute;
-  width: 50px;
-  height: 42.5px;
-  right: 140px;
-  top: 114px;
+  width: 40px;
+  height: 40px;
+  right: 350px;
+  top: 150px;
   z-index: 2;
 }
 
@@ -332,8 +344,8 @@
   .ctaVectorBack {
     width: 560px;
     height: 327px;
-    left: -130px;
-    top: 130px;
+    right: -60px;
+    top: 60px;
   }
 
   .ctaVectorFront {
@@ -434,8 +446,8 @@
   .ctaVectorBack {
     width: 450px;
     height: 263px;
-    left: -100px;
-    top: 110px;
+    right: -40px;
+    top: 40px;
   }
 
   .ctaVectorFront {
@@ -535,8 +547,8 @@
   .ctaVectorBack {
     width: 360px;
     height: 210px;
-    left: -80px;
-    top: 90px;
+    right: -30px;
+    top: 30px;
   }
 
   .ctaVectorFront {
@@ -580,8 +592,8 @@
   .ctaVectorBack {
     width: 300px;
     height: 175px;
-    left: -60px;
-    top: 75px;
+    right: -20px;
+    top: 20px;
   }
 
   .ctaVectorFront {
