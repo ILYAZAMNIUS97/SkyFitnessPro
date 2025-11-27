@@ -12,6 +12,19 @@ interface HomeProps {
 }
 
 export default function Home({ courses }: HomeProps) {
+  // Определяем правильный порядок карточек согласно макету
+  const courseOrder = ['Йога', 'Стретчинг', 'Фитнес', 'Степ-аэробика', 'Бодифлекс'];
+
+  // Сортируем курсы в нужном порядке
+  const sortedCourses = [...courses].sort((a, b) => {
+    const indexA = courseOrder.indexOf(a.nameRU);
+    const indexB = courseOrder.indexOf(b.nameRU);
+    // Если курс не найден в списке, помещаем его в конец
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    return indexA - indexB;
+  });
+
   return (
     <Layout>
       <Head>
@@ -33,13 +46,13 @@ export default function Home({ courses }: HomeProps) {
         </section>
 
         <section className={styles.courses}>
-          {courses.length === 0 ? (
+          {sortedCourses.length === 0 ? (
             <div className={styles.empty}>
               <p>Курсы пока не добавлены. Скоро здесь появятся новые программы тренировок!</p>
             </div>
           ) : (
             <div className={styles.coursesGrid}>
-              {courses.map((course) => (
+              {sortedCourses.map((course) => (
                 <CourseCard key={course._id} course={course} />
               ))}
             </div>
