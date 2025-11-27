@@ -6,44 +6,21 @@
 
 /* Hero Banner */
 .hero {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #ffc700;
+  width: 100%;
+  max-width: 1160px;
+  height: 310px;
   border-radius: 30px;
-  padding: 50px 60px;
-  margin-bottom: 60px;
-  min-height: 310px;
-  position: relative;
+  margin: 0 auto 60px;
   overflow: hidden;
-}
-
-.heroContent {
-  flex: 1;
-  z-index: 2;
-}
-
-.heroTitle {
-  font-size: 60px;
-  font-weight: 400;
-  color: #ffffff;
-  line-height: 1.1;
-  margin: 0;
-}
-
-.heroImage {
-  flex-shrink: 0;
-  width: 400px;
-  height: 280px;
   position: relative;
-  z-index: 1;
 }
 
-.heroImage img {
+.heroImageFull {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
+  display: block;
 }
 
 /* Подойдет для вас */
@@ -52,8 +29,11 @@
 }
 
 .sectionTitle {
+  max-width: 810px;
+  font-family: 'Roboto', 'Inter', sans-serif;
   font-size: 40px;
-  font-weight: 400;
+  font-weight: 600;
+  line-height: 1.1;
   margin-bottom: 40px;
   color: #000000;
 }
@@ -65,29 +45,31 @@
 }
 
 .fittingCard {
-  background: #000000;
-  border-radius: 30px;
-  padding: 30px;
+  background: linear-gradient(115.81deg, #151720 34.98%, #1e212e 91.5%);
+  border-radius: 28px;
+  padding: 20px;
   display: flex;
   align-items: flex-start;
-  gap: 20px;
+  gap: 10px;
   min-height: 141px;
+  max-width: 368px;
 }
 
 .fittingNumber {
-  font-size: 80px;
-  font-weight: 400;
+  font-size: 48px;
+  font-weight: 600;
   color: #bcec30;
   line-height: 1;
   flex-shrink: 0;
 }
 
 .fittingText {
+  font-family: 'Roboto', 'Inter', sans-serif;
   font-size: 24px;
   font-weight: 400;
   color: #ffffff;
-  line-height: 1.3;
-  margin: 8px 0 0 0;
+  line-height: 1.1;
+  margin: 0;
 }
 
 /* Направления */
@@ -96,12 +78,16 @@
 }
 
 .directionsGrid {
+  width: 100%;
+  max-width: 1160px;
+  height: 146px;
   background: #bcec30;
-  border-radius: 30px;
-  padding: 40px 50px;
+  border-radius: 28px;
+  padding: 30px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px 40px;
+  gap: 10px 40px;
+  align-items: center;
 }
 
 .directionItem {
@@ -110,18 +96,18 @@
   gap: 12px;
 }
 
-.directionPlus {
-  font-size: 24px;
-  font-weight: 400;
-  color: #000000;
+.directionIcon {
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
 }
 
 .directionText {
+  font-family: 'Roboto', 'Inter', sans-serif;
   font-size: 24px;
   font-weight: 400;
   color: #000000;
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
 /* Начните путь к новому телу */
@@ -141,9 +127,10 @@
 }
 
 .ctaTitle {
-  font-size: 48px;
-  font-weight: 400;
-  line-height: 1.1;
+  font-family: 'Roboto', 'Inter', sans-serif;
+  font-size: 60px;
+  font-weight: 500;
+  line-height: 1;
   margin: 0 0 30px 0;
   color: #000000;
 }
@@ -155,10 +142,11 @@
 }
 
 .benefitItem {
+  font-family: 'Roboto', 'Inter', sans-serif;
   font-size: 24px;
   font-weight: 400;
   color: #000000;
-  line-height: 1.4;
+  line-height: 1.1;
   margin-bottom: 14px;
   padding-left: 20px;
   position: relative;
@@ -306,16 +294,8 @@
 /* Responsive */
 @media (max-width: 1024px) {
   .hero {
-    padding: 40px 40px;
-  }
-
-  .heroTitle {
-    font-size: 48px;
-  }
-
-  .heroImage {
-    width: 320px;
-    height: 240px;
+    max-width: 100%;
+    height: 280px;
   }
 
   .fittingCards {
@@ -339,20 +319,8 @@
   }
 
   .hero {
-    flex-direction: column;
-    padding: 30px;
-    text-align: center;
-    min-height: auto;
-  }
-
-  .heroTitle {
-    font-size: 36px;
-  }
-
-  .heroImage {
-    width: 100%;
-    max-width: 300px;
-    height: 200px;
+    height: 220px;
+    border-radius: 24px;
   }
 
   .sectionTitle {
@@ -441,12 +409,8 @@
   }
 
   .hero {
-    padding: 24px;
-    border-radius: 24px;
-  }
-
-  .heroTitle {
-    font-size: 28px;
+    height: 180px;
+    border-radius: 20px;
   }
 
   .sectionTitle {
@@ -500,8 +464,8 @@
 }
 
 @media (max-width: 360px) {
-  .heroTitle {
-    font-size: 24px;
+  .hero {
+    height: 160px;
   }
 
   .sectionTitle {

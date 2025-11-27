@@ -140,16 +140,12 @@ export default function CoursePage({ course }: CoursePageProps) {
 
       <div className={styles.container}>
         {/* Hero Banner */}
-        <div
-          className={styles.hero}
-          style={{ backgroundColor: course.backgroundColor || '#FFC700' }}
-        >
-          <div className={styles.heroContent}>
-            <h1 className={styles.heroTitle}>{course.nameRU}</h1>
-          </div>
-          <div className={styles.heroImage}>
-            <img src={course.image} alt={course.nameRU} />
-          </div>
+        <div className={styles.hero}>
+          <img
+            src={course.heroImage || course.image}
+            alt={course.nameRU}
+            className={styles.heroImageFull}
+          />
         </div>
 
         {/* Подойдет для вас */}
@@ -174,7 +170,7 @@ export default function CoursePage({ course }: CoursePageProps) {
             <div className={styles.directionsGrid}>
               {course.directions.map((direction, index) => (
                 <div key={index} className={styles.directionItem}>
-                  <span className={styles.directionPlus}>+</span>
+                  <img src="/img/icon/star.svg" alt="" className={styles.directionIcon} />
                   <span className={styles.directionText}>{direction}</span>
                 </div>
               ))}

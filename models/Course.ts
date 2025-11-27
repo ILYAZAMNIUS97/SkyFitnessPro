@@ -21,6 +21,10 @@ const CourseSchema = new Schema<ICourse>(
       type: String,
       required: [true, 'Изображение курса обязательно'],
     },
+    heroImage: {
+      type: String,
+      required: false,
+    },
     directions: {
       type: [String],
       default: [],

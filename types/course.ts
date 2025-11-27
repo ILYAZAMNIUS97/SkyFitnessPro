@@ -3,7 +3,8 @@ export interface ICourse {
   nameRU: string;
   nameEN: string;
   description: string;
-  image: string;
+  image: string; // Изображение для карточки на главной странице
+  heroImage?: string; // Изображение для hero-баннера на странице курса
   directions: string[];
   fitting: string[];
   difficulty: string;
