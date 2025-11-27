@@ -1,125 +1,271 @@
 .container {
-  max-width: 1200px;
+  max-width: 1160px;
   margin: 0 auto;
   padding: 0 20px 80px;
 }
 
+/* Hero Banner */
 .hero {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
-  margin-bottom: 60px;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  background-color: #ffc700;
+  border-radius: 30px;
+  padding: 50px 60px;
+  margin-bottom: 60px;
+  min-height: 310px;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroContent {
+  flex: 1;
+  z-index: 2;
+}
+
+.heroTitle {
+  font-size: 60px;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 1.1;
+  margin: 0;
 }
 
 .heroImage {
-  width: 100%;
-  height: 400px;
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
+  flex-shrink: 0;
+  width: 400px;
+  height: 280px;
+  position: relative;
+  z-index: 1;
 }
 
 .heroImage img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
 }
 
-.heroContent {
+/* Подойдет для вас */
+.fittingSection {
+  margin-bottom: 60px;
+}
+
+.sectionTitle {
+  font-size: 40px;
+  font-weight: 400;
+  margin-bottom: 40px;
+  color: #000000;
+}
+
+.fittingCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 37px;
+}
+
+.fittingCard {
+  background: #000000;
+  border-radius: 30px;
+  padding: 30px;
   display: flex;
-  flex-direction: column;
-  gap: 24px;
+  align-items: flex-start;
+  gap: 20px;
+  min-height: 141px;
 }
 
-.title {
-  font-size: 48px;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1.2;
-  margin: 0;
+.fittingNumber {
+  font-size: 80px;
+  font-weight: 400;
+  color: #bcec30;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
-.description {
-  font-size: 18px;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin: 0;
+.fittingText {
+  font-size: 24px;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 1.3;
+  margin: 8px 0 0 0;
 }
 
-.meta {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 24px 0;
-  border-top: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
+/* Направления */
+.directionsSection {
+  margin-bottom: 60px;
 }
 
-.metaItem {
+.directionsGrid {
+  background: #bcec30;
+  border-radius: 30px;
+  padding: 40px 50px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px 40px;
+}
+
+.directionItem {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.metaLabel {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary);
+.directionPlus {
+  font-size: 24px;
+  font-weight: 400;
+  color: #000000;
+  flex-shrink: 0;
 }
 
-.metaValue {
-  font-size: 16px;
-  color: var(--text-secondary);
+.directionText {
+  font-size: 24px;
+  font-weight: 400;
+  color: #000000;
+  line-height: 1.2;
 }
 
-.startButton {
-  padding: 16px 48px;
-  background: var(--primary-color);
-  color: white;
+/* Начните путь к новому телу */
+.ctaSection {
+  background: #f5f5f5;
+  border-radius: 30px;
+  padding: 50px 60px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  position: relative;
+}
+
+.ctaContent {
+  z-index: 2;
+}
+
+.ctaTitle {
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 1.1;
+  margin: 0 0 30px 0;
+  color: #000000;
+}
+
+.benefitsList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px 0;
+}
+
+.benefitItem {
+  font-size: 24px;
+  font-weight: 400;
+  color: #000000;
+  line-height: 1.4;
+  margin-bottom: 14px;
+  padding-left: 20px;
+  position: relative;
+}
+
+.benefitItem:before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #000000;
+}
+
+.ctaButton {
+  padding: 20px 40px;
+  background: #bcec30;
+  color: #000000;
   border: none;
-  border-radius: var(--border-radius);
+  border-radius: 46px;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 400;
   cursor: pointer;
-  transition: var(--transition);
-  align-self: flex-start;
+  transition: all 0.3s ease;
+  min-width: 275px;
+  text-align: center;
 }
 
-.startButton:hover {
-  background: #6b1bb3;
+.ctaButton:hover {
+  background: #a8d429;
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 12px rgba(188, 236, 48, 0.3);
 }
 
-.startButton:active {
+.ctaButton:active {
   transform: translateY(0);
 }
 
-.workoutsSection {
-  margin-top: 60px;
+.ctaButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-.sectionTitle {
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 32px;
-  color: var(--text-primary);
-}
-
-.emptyText {
-  text-align: center;
-  padding: 60px 20px;
-  background: var(--bg-card);
-  border-radius: var(--border-radius);
-  color: var(--text-secondary);
-  font-size: 16px;
-}
-
-.workoutsList {
+.ctaImage {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  z-index: 1;
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.ctaImageWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.runnerImage {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+  z-index: 3;
+}
+
+/* Декоративные круги */
+.decorCircle1 {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(188, 236, 48, 0.2) 0%, rgba(188, 236, 48, 0.05) 100%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.decorCircle2 {
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(188, 236, 48, 0.15) 0%, rgba(188, 236, 48, 0) 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  animation: pulse 3s ease-in-out infinite 0.5s;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 0.8;
+  }
 }
 
 .notFound {
@@ -157,68 +303,118 @@
   box-shadow: var(--shadow-md);
 }
 
+/* Responsive */
+@media (max-width: 1024px) {
+  .hero {
+    padding: 40px 40px;
+  }
+
+  .heroTitle {
+    font-size: 48px;
+  }
+
+  .heroImage {
+    width: 320px;
+    height: 240px;
+  }
+
+  .fittingCards {
+    gap: 24px;
+  }
+
+  .directionsGrid {
+    padding: 30px 40px;
+    gap: 20px 30px;
+  }
+
+  .ctaSection {
+    padding: 40px 40px;
+    gap: 40px;
+  }
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 0 16px 60px;
   }
 
   .hero {
-    grid-template-columns: 1fr;
-    gap: 28px;
-    margin-bottom: 50px;
+    flex-direction: column;
+    padding: 30px;
+    text-align: center;
+    min-height: auto;
+  }
+
+  .heroTitle {
+    font-size: 36px;
   }
 
   .heroImage {
-    height: 280px;
-    border-radius: 28px;
-  }
-
-  .title {
-    font-size: 32px;
-  }
-
-  .description {
-    font-size: 16px;
-  }
-
-  .meta {
-    gap: 14px;
-    padding: 20px 0;
-  }
-
-  .metaItem {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-  }
-
-  .metaLabel {
-    font-size: 15px;
-  }
-
-  .metaValue {
-    font-size: 15px;
-  }
-
-  .startButton {
     width: 100%;
-    padding: 14px 40px;
-    font-size: 16px;
-    text-align: center;
+    max-width: 300px;
+    height: 200px;
   }
 
   .sectionTitle {
-    font-size: 24px;
+    font-size: 28px;
     margin-bottom: 28px;
   }
 
-  .workoutsSection {
-    margin-top: 50px;
+  .fittingCards {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 
-  .emptyText {
-    padding: 50px 16px;
-    font-size: 15px;
+  .fittingCard {
+    padding: 24px;
+    min-height: auto;
+  }
+
+  .fittingNumber {
+    font-size: 60px;
+  }
+
+  .fittingText {
+    font-size: 18px;
+  }
+
+  .directionsGrid {
+    grid-template-columns: 1fr;
+    padding: 24px 30px;
+    gap: 16px;
+  }
+
+  .directionText {
+    font-size: 18px;
+  }
+
+  .directionPlus {
+    font-size: 20px;
+  }
+
+  .ctaSection {
+    grid-template-columns: 1fr;
+    padding: 30px;
+    gap: 30px;
+  }
+
+  .ctaTitle {
+    font-size: 32px;
+    margin-bottom: 24px;
+  }
+
+  .benefitItem {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .ctaButton {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .ctaImage {
+    height: 300px;
   }
 
   .notFound {
@@ -245,38 +441,74 @@
   }
 
   .hero {
-    gap: 24px;
-    margin-bottom: 40px;
-  }
-
-  .heroImage {
-    height: 240px;
+    padding: 24px;
     border-radius: 24px;
   }
 
-  .title {
+  .heroTitle {
     font-size: 28px;
   }
 
-  .description {
-    font-size: 15px;
+  .sectionTitle {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .fittingCard {
+    padding: 20px;
+    border-radius: 24px;
+  }
+
+  .fittingNumber {
+    font-size: 48px;
+  }
+
+  .fittingText {
+    font-size: 16px;
+  }
+
+  .directionsGrid {
+    padding: 20px 24px;
+    border-radius: 24px;
+  }
+
+  .directionText {
+    font-size: 16px;
+  }
+
+  .ctaSection {
+    padding: 24px;
+    border-radius: 24px;
+  }
+
+  .ctaTitle {
+    font-size: 28px;
+  }
+
+  .benefitItem {
+    font-size: 16px;
+  }
+
+  .ctaButton {
+    padding: 16px 32px;
+    font-size: 16px;
+  }
+
+  .ctaImage {
+    height: 250px;
+  }
+}
+
+@media (max-width: 360px) {
+  .heroTitle {
+    font-size: 24px;
   }
 
   .sectionTitle {
     font-size: 22px;
   }
-}
 
-@media (max-width: 360px) {
-  .heroImage {
-    height: 220px;
-  }
-
-  .title {
-    font-size: 26px;
-  }
-
-  .sectionTitle {
-    font-size: 20px;
+  .ctaTitle {
+    font-size: 24px;
   }
 }

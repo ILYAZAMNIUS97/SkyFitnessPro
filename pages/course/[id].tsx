@@ -1,7 +1,9 @@
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
+import AuthModal from '@/components/AuthModal';
 import { ICourse } from '@/types/course';
 import dbConnect from '@/lib/mongodb';
 import Course from '@/models/Course';
@@ -13,6 +15,91 @@ interface CoursePageProps {
 
 export default function CoursePage({ course }: CoursePageProps) {
   const router = useRouter();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [hasCourse, setHasCourse] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Проверка авторизации
+    const token = localStorage.getItem('token');
+    const email = localStorage.getItem('userEmail');
+
+    if (token && email) {
+      setIsAuthenticated(true);
+      setUserEmail(email);
+      checkUserCourse(email);
+    }
+  }, [course]);
+
+  const checkUserCourse = async (email: string) => {
+    try {
+      const response = await fetch('/api/user/courses', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const hasThisCourse = data.courses?.includes(course?._id);
+        setHasCourse(hasThisCourse);
+      }
+    } catch (error) {
+      console.error('Error checking user courses:', error);
+    }
+  };
+
+  const handleAddCourse = async () => {
+    if (!isAuthenticated) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    if (hasCourse) {
+      // Если курс уже добавлен, переходим в профиль
+      router.push('/profile');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/user/courses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ courseId: course?._id }),
+      });
+
+      if (response.ok) {
+        setHasCourse(true);
+        router.push('/profile');
+      } else {
+        const data = await response.json();
+        alert(data.message || 'Ошибка при добавлении курса');
+      }
+    } catch (error) {
+      console.error('Error adding course:', error);
+      alert('Произошла ошибка при добавлении курса');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAuthSuccess = () => {
+    setIsAuthModalOpen(false);
+    const token = localStorage.getItem('token');
+    const email = localStorage.getItem('userEmail');
+
+    if (token && email) {
+      setIsAuthenticated(true);
+      setUserEmail(email);
+      checkUserCourse(email);
+    }
+  };
 
   if (!course) {
     return (
@@ -37,6 +124,12 @@ export default function CoursePage({ course }: CoursePageProps) {
     );
   }
 
+  const getButtonText = () => {
+    if (!isAuthenticated) return 'Войдите, чтобы добавить курс';
+    if (hasCourse) return 'Перейти к тренировкам';
+    return 'Добавить курс';
+  };
+
   return (
     <Layout>
       <Head>
@@ -46,49 +139,90 @@ export default function CoursePage({ course }: CoursePageProps) {
       </Head>
 
       <div className={styles.container}>
-        <div className={styles.hero}>
+        {/* Hero Banner */}
+        <div
+          className={styles.hero}
+          style={{ backgroundColor: course.backgroundColor || '#FFC700' }}
+        >
+          <div className={styles.heroContent}>
+            <h1 className={styles.heroTitle}>{course.nameRU}</h1>
+          </div>
           <div className={styles.heroImage}>
             <img src={course.image} alt={course.nameRU} />
           </div>
-          <div className={styles.heroContent}>
-            <h1 className={styles.title}>{course.nameRU}</h1>
-            <p className={styles.description}>{course.description}</p>
-            <div className={styles.meta}>
-              <div className={styles.metaItem}>
-                <span className={styles.metaLabel}>Длительность:</span>
-                <span className={styles.metaValue}>
-                  {course.durationInDays} {course.durationInDays === 1 ? 'день' : 'дней'}
-                </span>
-              </div>
-              <div className={styles.metaItem}>
-                <span className={styles.metaLabel}>Время:</span>
-                <span className={styles.metaValue}>
-                  {course.dailyDurationInMinutes.from}-{course.dailyDurationInMinutes.to} мин/день
-                </span>
-              </div>
-              <div className={styles.metaItem}>
-                <span className={styles.metaLabel}>Уровень:</span>
-                <span className={styles.metaValue}>{course.difficulty}</span>
-              </div>
-            </div>
-            <button className={styles.startButton}>Начать курс</button>
-          </div>
         </div>
 
-        <section className={styles.workoutsSection}>
-          <h2 className={styles.sectionTitle}>Тренировки</h2>
-          {course.workouts.length === 0 ? (
-            <p className={styles.emptyText}>
-              Тренировки для этого курса еще не добавлены. Скоро они появятся!
-            </p>
-          ) : (
-            <div className={styles.workoutsList}>
-              {/* Здесь будет список тренировок */}
-              <p className={styles.emptyText}>Тренировки будут отображаться здесь</p>
+        {/* Подойдет для вас */}
+        {course.fitting && course.fitting.length > 0 && (
+          <section className={styles.fittingSection}>
+            <h2 className={styles.sectionTitle}>Подойдет для вас, если:</h2>
+            <div className={styles.fittingCards}>
+              {course.fitting.map((item, index) => (
+                <div key={index} className={styles.fittingCard}>
+                  <span className={styles.fittingNumber}>{index + 1}</span>
+                  <p className={styles.fittingText}>{item}</p>
+                </div>
+              ))}
             </div>
-          )}
+          </section>
+        )}
+
+        {/* Направления */}
+        {course.directions && course.directions.length > 0 && (
+          <section className={styles.directionsSection}>
+            <h2 className={styles.sectionTitle}>Направления</h2>
+            <div className={styles.directionsGrid}>
+              {course.directions.map((direction, index) => (
+                <div key={index} className={styles.directionItem}>
+                  <span className={styles.directionPlus}>+</span>
+                  <span className={styles.directionText}>{direction}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Начните путь к новому телу */}
+        <section className={styles.ctaSection}>
+          <div className={styles.ctaContent}>
+            <h2 className={styles.ctaTitle}>
+              Начните путь
+              <br />к новому телу
+            </h2>
+            {course.description && (
+              <ul className={styles.benefitsList}>
+                {course.description
+                  .split('\n')
+                  .filter((line) => line.trim())
+                  .map((benefit, index) => (
+                    <li key={index} className={styles.benefitItem}>
+                      {benefit}
+                    </li>
+                  ))}
+              </ul>
+            )}
+            <button className={styles.ctaButton} onClick={handleAddCourse} disabled={isLoading}>
+              {isLoading ? 'Загрузка...' : getButtonText()}
+            </button>
+          </div>
+          <div className={styles.ctaImage}>
+            <div className={styles.ctaImageWrapper}>
+              {/* Декоративные круги */}
+              <div className={styles.decorCircle1}></div>
+              <div className={styles.decorCircle2}></div>
+              <img
+                src="/img/runner.png"
+                alt="Start your fitness journey"
+                className={styles.runnerImage}
+              />
+            </div>
+          </div>
         </section>
       </div>
+
+      {isAuthModalOpen && (
+        <AuthModal onClose={() => setIsAuthModalOpen(false)} onSuccess={handleAuthSuccess} />
+      )}
     </Layout>
   );
 }
