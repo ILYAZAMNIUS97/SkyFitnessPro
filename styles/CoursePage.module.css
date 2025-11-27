@@ -10,7 +10,7 @@
   max-width: 1160px;
   height: 310px;
   border-radius: 30px;
-  margin: 0 auto 60px;
+  margin: 60px auto 60px;
   overflow: hidden;
   position: relative;
 }
@@ -278,7 +278,7 @@
   position: absolute;
   width: 40px;
   height: 40px;
-  right: 350px;
+  right: 380px;
   top: 150px;
   z-index: 2;
 }
