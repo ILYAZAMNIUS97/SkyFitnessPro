@@ -125,7 +125,6 @@ export default function CoursePage({ course }: CoursePageProps) {
   }
 
   const getButtonText = () => {
-    if (!isAuthenticated) return 'Войдите, чтобы добавить курс';
     if (hasCourse) return 'Перейти к тренировкам';
     return 'Добавить курс';
   };
@@ -203,9 +202,8 @@ export default function CoursePage({ course }: CoursePageProps) {
           </div>
           <div className={styles.ctaImage}>
             <div className={styles.ctaImageWrapper}>
-              {/* Декоративные круги */}
-              <div className={styles.decorCircle1}></div>
-              <div className={styles.decorCircle2}></div>
+              <img src="/img/vector-6084.png" alt="" className={styles.ctaVectorBack} />
+              <img src="/img/vector-6094.png" alt="" className={styles.ctaVectorFront} />
               <img
                 src="/img/runner.png"
                 alt="Start your fitness journey"
