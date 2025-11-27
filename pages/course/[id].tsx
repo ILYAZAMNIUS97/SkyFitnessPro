@@ -143,8 +143,9 @@ export default function CoursePage({ course }: CoursePageProps) {
           <img
             src={course.heroImage || course.image}
             alt={course.nameRU}
-            className={styles.heroImageFull}
+            className={styles.heroImageDesktop}
           />
+          <img src={course.image} alt={course.nameRU} className={styles.heroImageMobile} />
         </div>
 
         {/* Подойдет для вас */}
