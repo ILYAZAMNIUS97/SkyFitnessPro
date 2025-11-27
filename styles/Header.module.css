@@ -55,6 +55,12 @@
   align-items: center;
 }
 
+.userMenuWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
 .navLink {
   font-size: 18px;
   font-weight: 400;
@@ -89,6 +95,161 @@
 .loginButton:hover {
   opacity: 0.9;
   transform: translateY(-1px);
+}
+
+.userProfileButtonActive {
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
+  border-color: transparent;
+}
+
+.userProfileButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid #e0e0e0;
+  background: #ffffff;
+  font-size: 18px;
+  font-weight: 500;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.userProfileButton:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.userAvatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userAvatar svg {
+  width: 22px;
+  height: 22px;
+  fill: #b5b5b5;
+}
+
+.userName {
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #202020;
+}
+
+.userCaret {
+  font-size: 14px;
+  color: #818181;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.userCaretOpen {
+  transform: rotate(180deg);
+}
+
+.userDropdown {
+  position: absolute;
+  top: calc(100% + 16px);
+  right: 0;
+  width: 210px;
+  padding: 24px 20px;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeIn 0.2s ease;
+  z-index: 10;
+}
+
+.userDropdown::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  right: 32px;
+  width: 16px;
+  height: 16px;
+  background: #ffffff;
+  transform: rotate(45deg);
+  box-shadow: -4px -4px 18px rgba(0, 0, 0, 0.06);
+}
+
+.userDropdownInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+}
+
+.userDropdownName {
+  font-weight: 600;
+  font-size: 17px;
+  color: #202020;
+}
+
+.userDropdownEmail {
+  font-size: 14px;
+  color: #8b8b8b;
+}
+
+.userDropdownPrimary {
+  width: 100%;
+  height: 44px;
+  border-radius: 999px;
+  border: none;
+  background: #bcec30;
+  color: #202020;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.userDropdownPrimary:hover {
+  background: #d0ff33;
+}
+
+.userDropdownSecondary {
+  width: 100%;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid #202020;
+  background: transparent;
+  color: #202020;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.userDropdownSecondary:hover {
+  background: #202020;
+  color: #ffffff;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 1200px) {

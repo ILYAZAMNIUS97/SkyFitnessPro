@@ -1,0 +1,142 @@
+.card {
+  width: 320px;
+  padding: 32px 28px 36px;
+  border-radius: 28px;
+  background: #ffffff;
+  box-shadow: 0px 20px 80px rgba(32, 32, 32, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.logoBlock {
+  display: flex;
+  justify-content: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input {
+  width: 100%;
+  height: 52px;
+  border-radius: 12px;
+  border: 1px solid #dedede;
+  padding: 0 16px;
+  font-size: 16px;
+  color: #202020;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.input::placeholder {
+  color: #a0a0a0;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #bcec30;
+  box-shadow: 0 0 0 3px rgba(188, 236, 48, 0.3);
+}
+
+.inputError {
+  border-color: #ff4d4f;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.3);
+}
+
+.errorText {
+  font-size: 13px;
+  color: #ff4d4f;
+}
+
+.serverError {
+  background: #fff4f4;
+  color: #d7000c;
+  border: 1px solid #ff4d4f;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.successMessage {
+  background: #f3ffe3;
+  color: #4d8300;
+  border: 1px solid #bcec30;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.primaryButton {
+  width: 100%;
+  height: 54px;
+  border-radius: 999px;
+  border: none;
+  background: #bcec30;
+  color: #202020;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: #d0ff33;
+}
+
+.primaryButton:active:not(:disabled) {
+  background: #202020;
+  color: #ffffff;
+}
+
+.primaryButton:disabled {
+  background: #f0f0f0;
+  color: #a8a8a8;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  width: 100%;
+  height: 54px;
+  border-radius: 999px;
+  border: 1px solid #202020;
+  background: #ffffff;
+  color: #202020;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.secondaryButton:hover {
+  background: rgba(32, 32, 32, 0.05);
+}
+
+.secondaryButton:active {
+  background: #202020;
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .card {
+    width: 100%;
+    padding: 24px 20px 28px;
+  }
+}
