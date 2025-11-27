@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 import styles from '@/styles/Header.module.css';
@@ -71,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({ onLoginClick, onLogout, user }) => {
                   className={`${styles.userCaret} ${isMenuOpen ? styles.userCaretOpen : ''}`}
                   aria-hidden="true"
                 >
-                  ▾
+                  <Image src="/img/icon/arrow.svg" alt="" width={13} height={8} />
                 </span>
               </button>
               {isMenuOpen && (

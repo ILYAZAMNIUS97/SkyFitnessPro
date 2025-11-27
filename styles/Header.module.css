@@ -143,6 +143,12 @@
   color: #818181;
   line-height: 1;
   transition: transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.userCaret img {
+  display: block;
 }
 
 .userCaretOpen {
@@ -284,6 +290,24 @@
     font-size: 14px;
     border-radius: 46px;
   }
+
+  .userProfileButton {
+    padding: 0;
+  }
+
+  .userName {
+    display: none;
+  }
+
+  .userCaret,
+  .userCaretOpen {
+    display: inline-block;
+  }
+
+  .userAvatar {
+    width: 30px;
+    height: 30px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -304,5 +328,10 @@
     height: 40px;
     padding: 10px 16px;
     font-size: 13px;
+  }
+
+  .userAvatar {
+    width: 30px;
+    height: 30px;
   }
 }

@@ -140,3 +140,19 @@
     padding: 24px 20px 28px;
   }
 }
+
+@media (max-width: 480px) {
+  .card {
+    width: 343px;
+    max-width: 100%;
+    min-height: 425px;
+    padding: 40px;
+    border-radius: 30px;
+    gap: 48px;
+    box-shadow: 0px 4px 67px -12px #00000021;
+  }
+
+  .form {
+    gap: 18px;
+  }
+}
