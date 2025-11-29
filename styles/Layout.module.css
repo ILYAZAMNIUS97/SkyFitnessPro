@@ -7,21 +7,21 @@
 
 .main {
   flex: 1;
-  padding-top: 80px;
+  padding-top: 125px; /* 45px отступ от края + 80px высота хедера */
   padding-bottom: 80px;
   background-color: #fafafa;
 }
 
 @media (max-width: 768px) {
   .main {
-    padding-top: 96px;
+    padding-top: 141px; /* 45px отступ от края + 96px высота хедера */
     padding-bottom: 60px;
   }
 }
 
 @media (max-width: 480px) {
   .main {
-    padding-top: 56px;
+    padding-top: 101px; /* 45px отступ от края + 56px высота хедера */
     padding-bottom: 50px;
   }
 }

@@ -1,6 +1,6 @@
 .header {
   position: fixed;
-  top: 0;
+  top: 45px;
   left: 0;
   right: 0;
   z-index: 1000;
@@ -8,6 +8,18 @@
   height: 80px;
   display: flex;
   align-items: center;
+}
+
+/* Заполнение пространства над хедером */
+.header::before {
+  content: '';
+  position: absolute;
+  top: -45px;
+  left: 0;
+  right: 0;
+  height: 45px;
+  background-color: #fafafa;
+  z-index: -1;
 }
 
 .container {
