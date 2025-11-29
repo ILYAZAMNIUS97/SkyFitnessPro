@@ -178,6 +178,17 @@ export default function CoursePage({ course }: CoursePageProps) {
           </section>
         )}
 
+        {/* Бегун для мобильной версии */}
+        <div className={styles.mobileRunnerSection}>
+          <img src="/img/vector-6084.png" alt="" className={styles.mobileVectorBack} />
+          <img src="/img/vector-6094.png" alt="" className={styles.mobileVectorFront} />
+          <img
+            src="/img/runner.png"
+            alt="Start your fitness journey"
+            className={styles.mobileRunnerImage}
+          />
+        </div>
+
         {/* Начните путь к новому телу */}
         <section className={styles.ctaSection}>
           <div className={styles.ctaVectorContainer}>
