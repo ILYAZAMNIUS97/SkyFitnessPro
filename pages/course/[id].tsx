@@ -141,6 +141,7 @@ export default function CoursePage({ course }: CoursePageProps) {
 
   const getButtonText = () => {
     if (hasCourse) return 'Перейти к тренировкам';
+    if (!isAuthenticated) return 'Войдите, чтобы добавить курс';
     return 'Добавить курс';
   };
 
