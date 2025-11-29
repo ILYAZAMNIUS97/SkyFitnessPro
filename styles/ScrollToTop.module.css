@@ -32,7 +32,7 @@
 
 @media (max-width: 768px) {
   .scrollButton {
-    margin-top: 24px;
+    margin: 24px 0 0 auto;
     padding: 12px 24px;
     font-size: 16px;
   }
