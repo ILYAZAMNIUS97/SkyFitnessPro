@@ -113,7 +113,7 @@ export default function Profile() {
 
   // Переход к тренировке
   const handleStartWorkout = (courseId: string) => {
-    router.push(`/course/${courseId}`);
+    router.push(`/workout/${courseId}`);
   };
 
   // Состояние загрузки

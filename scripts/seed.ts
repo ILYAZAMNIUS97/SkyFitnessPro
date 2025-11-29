@@ -10,7 +10,24 @@ import path from 'path';
 // Загружаем переменные окружения
 dotenv.config({ path: path.join(__dirname, '../.env.local') });
 
-// Импортируем модели
+// Схемы
+const ExerciseSchema = new mongoose.Schema({
+  name: String,
+  quantity: Number,
+  unit: String,
+});
+
+const WorkoutSchema = new mongoose.Schema({
+  courseId: String,
+  title: String,
+  description: String,
+  videoUrl: String,
+  exercises: [ExerciseSchema],
+  order: Number,
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+});
+
 const CourseSchema = new mongoose.Schema({
   nameRU: String,
   nameEN: String,
@@ -32,6 +49,187 @@ const CourseSchema = new mongoose.Schema({
 });
 
 const Course = mongoose.models.Course || mongoose.model('Course', CourseSchema);
+const Workout = mongoose.models.Workout || mongoose.model('Workout', WorkoutSchema);
+
+// Данные тренировок для каждого курса
+// Используем реальные YouTube видео с йогой и фитнесом
+const workoutsTemplates = {
+  yoga: [
+    {
+      title: 'Утренняя практика',
+      description: 'Пробуждающий комплекс йоги для начала дня',
+      videoUrl: 'https://www.youtube.com/watch?v=4pKly2JojMw',
+      exercises: [
+        { name: 'Наклоны вперед', quantity: 50, unit: 'повторения' },
+        { name: 'Наклоны назад', quantity: 50, unit: 'повторения' },
+        { name: 'Поднятие ног, согнутых в коленях', quantity: 50, unit: 'повторения' },
+      ],
+      order: 1,
+    },
+    {
+      title: 'Красота и здоровье',
+      description: 'Комплекс для улучшения осанки и гибкости',
+      videoUrl: 'https://www.youtube.com/watch?v=v7AYKMP6rOE',
+      exercises: [
+        { name: 'Наклоны вперед', quantity: 50, unit: 'повторения' },
+        { name: 'Наклоны назад', quantity: 50, unit: 'повторения' },
+        { name: 'Поднятие ног, согнутых в коленях', quantity: 50, unit: 'повторения' },
+      ],
+      order: 2,
+    },
+    {
+      title: 'Асаны стоя',
+      description: 'Базовые позы йоги в положении стоя',
+      videoUrl: 'https://www.youtube.com/watch?v=j7rKKpwdXNE',
+      exercises: [
+        { name: 'Наклоны вперед', quantity: 50, unit: 'повторения' },
+        { name: 'Наклоны назад', quantity: 50, unit: 'повторения' },
+        { name: 'Поднятие ног, согнутых в коленях', quantity: 50, unit: 'повторения' },
+      ],
+      order: 3,
+    },
+    {
+      title: 'Растягиваем мышцы бедра',
+      description: 'Глубокая растяжка бедер и тазобедренных суставов',
+      videoUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A',
+      exercises: [
+        { name: 'Наклоны вперед', quantity: 50, unit: 'повторения' },
+        { name: 'Наклоны назад', quantity: 50, unit: 'повторения' },
+        { name: 'Поднятие ног, согнутых в коленях', quantity: 50, unit: 'повторения' },
+      ],
+      order: 4,
+    },
+    {
+      title: 'Гибкость спины',
+      description: 'Упражнения для здоровья позвоночника',
+      videoUrl: 'https://www.youtube.com/watch?v=COp7BR_Dvps',
+      exercises: [
+        { name: 'Наклоны вперед', quantity: 50, unit: 'повторения' },
+        { name: 'Наклоны назад', quantity: 50, unit: 'повторения' },
+        { name: 'Поднятие ног, согнутых в коленях', quantity: 50, unit: 'повторения' },
+      ],
+      order: 5,
+    },
+  ],
+  stretching: [
+    {
+      title: 'Утренняя растяжка',
+      description: 'Мягкая растяжка для пробуждения тела',
+      videoUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A',
+      exercises: [
+        { name: 'Растяжка спины', quantity: 30, unit: 'повторения' },
+        { name: 'Растяжка ног', quantity: 30, unit: 'повторения' },
+        { name: 'Растяжка рук', quantity: 30, unit: 'повторения' },
+      ],
+      order: 1,
+    },
+    {
+      title: 'Глубокий стретчинг',
+      description: 'Интенсивная растяжка всего тела',
+      videoUrl: 'https://www.youtube.com/watch?v=qULTwquOuT4',
+      exercises: [
+        { name: 'Растяжка спины', quantity: 40, unit: 'повторения' },
+        { name: 'Растяжка ног', quantity: 40, unit: 'повторения' },
+        { name: 'Растяжка рук', quantity: 40, unit: 'повторения' },
+      ],
+      order: 2,
+    },
+    {
+      title: 'Шпагат',
+      description: 'Подготовка к продольному и поперечному шпагату',
+      videoUrl: 'https://www.youtube.com/watch?v=L_xrDAtykMI',
+      exercises: [
+        { name: 'Выпады', quantity: 20, unit: 'повторения' },
+        { name: 'Складка', quantity: 30, unit: 'секунды' },
+        { name: 'Бабочка', quantity: 30, unit: 'секунды' },
+      ],
+      order: 3,
+    },
+  ],
+  fitness: [
+    {
+      title: 'Кардио разминка',
+      description: 'Интенсивная кардио тренировка',
+      videoUrl: 'https://www.youtube.com/watch?v=ml6cT4AZdqI',
+      exercises: [
+        { name: 'Прыжки на месте', quantity: 50, unit: 'повторения' },
+        { name: 'Бег на месте', quantity: 60, unit: 'секунды' },
+        { name: 'Берпи', quantity: 20, unit: 'повторения' },
+      ],
+      order: 1,
+    },
+    {
+      title: 'Силовая тренировка',
+      description: 'Упражнения с собственным весом',
+      videoUrl: 'https://www.youtube.com/watch?v=UItWltVZZmE',
+      exercises: [
+        { name: 'Приседания', quantity: 30, unit: 'повторения' },
+        { name: 'Отжимания', quantity: 20, unit: 'повторения' },
+        { name: 'Планка', quantity: 60, unit: 'секунды' },
+      ],
+      order: 2,
+    },
+    {
+      title: 'Пресс и кор',
+      description: 'Укрепление мышц пресса и кора',
+      videoUrl: 'https://www.youtube.com/watch?v=AnYl6Nk9GOA',
+      exercises: [
+        { name: 'Скручивания', quantity: 30, unit: 'повторения' },
+        { name: 'Велосипед', quantity: 30, unit: 'повторения' },
+        { name: 'Подъем ног', quantity: 20, unit: 'повторения' },
+      ],
+      order: 3,
+    },
+  ],
+  stepAerobics: [
+    {
+      title: 'Базовые шаги',
+      description: 'Изучение базовых шагов степ-аэробики',
+      videoUrl: 'https://www.youtube.com/watch?v=hLTJD9_DP6k',
+      exercises: [
+        { name: 'Basic Step', quantity: 50, unit: 'повторения' },
+        { name: 'V-Step', quantity: 40, unit: 'повторения' },
+        { name: 'Knee Lift', quantity: 30, unit: 'повторения' },
+      ],
+      order: 1,
+    },
+    {
+      title: 'Интервальный степ',
+      description: 'Чередование высокой и низкой интенсивности',
+      videoUrl: 'https://www.youtube.com/watch?v=tEmt1Znux58',
+      exercises: [
+        { name: 'Over the Top', quantity: 30, unit: 'повторения' },
+        { name: 'Turn Step', quantity: 20, unit: 'повторения' },
+        { name: 'Repeater', quantity: 40, unit: 'повторения' },
+      ],
+      order: 2,
+    },
+  ],
+  bodyflex: [
+    {
+      title: 'Дыхательная гимнастика',
+      description: 'Основы диафрагмального дыхания',
+      videoUrl: 'https://www.youtube.com/watch?v=Bys9R4EESHg',
+      exercises: [
+        { name: 'Диафрагмальное дыхание', quantity: 10, unit: 'минуты' },
+        { name: 'Задержка дыхания', quantity: 5, unit: 'повторения' },
+        { name: 'Вакуум живота', quantity: 5, unit: 'повторения' },
+      ],
+      order: 1,
+    },
+    {
+      title: 'Бодифлекс для живота',
+      description: 'Упражнения для плоского живота',
+      videoUrl: 'https://www.youtube.com/watch?v=eMoLMBvPkrs',
+      exercises: [
+        { name: 'Боковая растяжка', quantity: 10, unit: 'повторения' },
+        { name: 'Алмаз', quantity: 10, unit: 'повторения' },
+        { name: 'Лев', quantity: 10, unit: 'повторения' },
+      ],
+      order: 2,
+    },
+  ],
+};
 
 const coursesData = [
   {
@@ -64,7 +262,7 @@ const coursesData = [
       to: 50,
     },
     backgroundColor: '#FFC700',
-    workouts: [],
+    workoutsKey: 'yoga' as const,
   },
   {
     nameRU: 'Стретчинг',
@@ -96,7 +294,7 @@ const coursesData = [
       to: 50,
     },
     backgroundColor: '#2EA5FC',
-    workouts: [],
+    workoutsKey: 'stretching' as const,
   },
   {
     nameRU: 'Фитнес',
@@ -128,7 +326,7 @@ const coursesData = [
       to: 50,
     },
     backgroundColor: '#FF6D00',
-    workouts: [],
+    workoutsKey: 'fitness' as const,
   },
   {
     nameRU: 'Степ-аэробика',
@@ -160,7 +358,7 @@ const coursesData = [
       to: 50,
     },
     backgroundColor: '#FF6A5A',
-    workouts: [],
+    workoutsKey: 'stepAerobics' as const,
   },
   {
     nameRU: 'Бодифлекс',
@@ -192,7 +390,7 @@ const coursesData = [
       to: 50,
     },
     backgroundColor: '#9A48F1',
-    workouts: [],
+    workoutsKey: 'bodyflex' as const,
   },
 ];
 
@@ -207,18 +405,71 @@ async function seed() {
     // Очищаем существующие данные
     console.log('🗑️  Очистка существующих данных...');
     await Course.deleteMany({});
+    await Workout.deleteMany({});
     console.log('✅ Данные очищены');
 
-    // Добавляем тестовые курсы
-    console.log('📝 Добавление тестовых курсов...');
-    const courses = await Course.insertMany(coursesData);
-    console.log(`✅ Добавлено ${courses.length} курсов`);
+    // Добавляем курсы с тренировками
+    console.log('📝 Добавление курсов и тренировок...');
+
+    for (const courseData of coursesData) {
+      const { workoutsKey, ...courseFields } = courseData;
+
+      // Создаем курс
+      const course = await Course.create({
+        ...courseFields,
+        workouts: [],
+      });
+
+      console.log(`  📚 Создан курс: ${course.nameRU}`);
+
+      // Создаем тренировки для курса
+      const workoutTemplates = workoutsTemplates[workoutsKey] || [];
+      const workoutIds = [];
+
+      for (const workoutTemplate of workoutTemplates) {
+        const courseIdString = course._id.toString();
+        console.log(
+          `    📝 Создание тренировки для courseId: ${courseIdString} (type: ${typeof courseIdString})`
+        );
+
+        const workout = await Workout.create({
+          ...workoutTemplate,
+          courseId: courseIdString,
+        });
+
+        console.log(
+          `    🏋️ Создана тренировка: ${workout.title} (ID: ${workout._id}, courseId: ${workout.courseId}, courseId type: ${typeof workout.courseId})`
+        );
+        workoutIds.push(workout._id);
+      }
+
+      // Обновляем курс с ID тренировок
+      await Course.findByIdAndUpdate(course._id, { workouts: workoutIds });
+    }
+
+    const courses = await Course.find({});
+    const workouts = await Workout.find({});
+
+    console.log(`\n✅ Добавлено ${courses.length} курсов`);
+    console.log(`✅ Добавлено ${workouts.length} тренировок`);
 
     console.log('\n🎉 База данных успешно заполнена!');
     console.log('\nСозданные курсы:');
-    courses.forEach((course, index) => {
-      console.log(`  ${index + 1}. ${course.nameRU} (${course.difficulty})`);
-    });
+    for (const course of courses) {
+      const courseIdString = course._id.toString();
+      const courseWorkouts = workouts.filter((w) => w.courseId === courseIdString);
+      console.log(
+        `  ${course.nameRU} (${course.difficulty}) - ${courseWorkouts.length} тренировок`
+      );
+      console.log(`    Course ID: ${courseIdString}`);
+      if (courseWorkouts.length > 0) {
+        console.log(
+          `    First workout courseId: ${courseWorkouts[0].courseId} (type: ${typeof courseWorkouts[0].courseId})`
+        );
+      } else {
+        console.log(`    ⚠️  Нет тренировок для этого курса!`);
+      }
+    }
 
     process.exit(0);
   } catch (error) {

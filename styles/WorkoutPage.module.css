@@ -1,0 +1,303 @@
+/* Страница тренировки */
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 140px 80px;
+}
+
+.pageTitle {
+  font-family: 'Roboto', sans-serif;
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 110%;
+  color: #000000;
+  margin: 40px 0 30px;
+}
+
+/* Секция видео */
+.videoSection {
+  width: 100%;
+  max-width: 1160px;
+  margin-bottom: 40px;
+}
+
+.videoWrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  border-radius: 30px;
+  overflow: hidden;
+  background: #000;
+}
+
+.videoIframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.videoPlaceholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #f0f0f0 0%, #e0e0e0 100%);
+  cursor: pointer;
+}
+
+.videoPlaceholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.playButton {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.playButton:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+.playButton svg {
+  width: 32px;
+  height: 32px;
+  fill: white;
+  margin-left: 4px;
+}
+
+/* Секция упражнений */
+.exercisesSection {
+  width: 100%;
+  max-width: 1160px;
+  background: #ffffff;
+  border-radius: 30px;
+  box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
+  padding: 40px;
+}
+
+.exercisesTitle {
+  font-family: 'Roboto', sans-serif;
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 110%;
+  color: #000000;
+  margin-bottom: 30px;
+}
+
+.exercisesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px 20px;
+  margin-bottom: 30px;
+}
+
+.exerciseItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.exerciseName {
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 110%;
+  color: #000000;
+}
+
+.exerciseProgress {
+  width: 100%;
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.exerciseProgressFill {
+  height: 100%;
+  background: #565eef;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progressButton {
+  width: fit-content;
+  min-width: 278px;
+  height: 52px;
+  padding: 16px 40px;
+  background: #bcec30;
+  color: #000000;
+  border: none;
+  border-radius: 46px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 110%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.progressButton:hover {
+  background: #a8d429;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(188, 236, 48, 0.3);
+}
+
+.progressButton:active {
+  transform: translateY(0);
+}
+
+/* Состояние загрузки */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 20px;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #f0f0f0;
+  border-top-color: #bcec30;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Ошибка */
+.error {
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.error h1 {
+  font-size: 36px;
+  margin-bottom: 16px;
+  color: #000000;
+}
+
+.error p {
+  font-size: 18px;
+  color: #666666;
+  margin-bottom: 32px;
+}
+
+.backButton {
+  padding: 16px 32px;
+  background: #bcec30;
+  color: #000000;
+  border: none;
+  border-radius: 46px;
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.backButton:hover {
+  background: #a8d429;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 40px 80px;
+  }
+
+  .exercisesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px 60px;
+  }
+
+  .pageTitle {
+    font-size: 32px;
+    margin: 30px 0 20px;
+  }
+
+  .videoWrapper {
+    border-radius: 20px;
+  }
+
+  .exercisesSection {
+    padding: 24px;
+    border-radius: 20px;
+  }
+
+  .exercisesTitle {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .exercisesGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .progressButton {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  .playButton {
+    width: 60px;
+    height: 60px;
+  }
+
+  .playButton svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 12px 50px;
+  }
+
+  .pageTitle {
+    font-size: 28px;
+  }
+
+  .exercisesSection {
+    padding: 20px;
+  }
+
+  .exercisesTitle {
+    font-size: 20px;
+  }
+
+  .exerciseName {
+    font-size: 16px;
+  }
+}
