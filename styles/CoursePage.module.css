@@ -584,7 +584,7 @@
     position: absolute;
     width: 32px;
     height: 27px;
-    left: 175px;
+    left: 210px;
     top: -30px;
     z-index: 2;
   }
@@ -594,7 +594,7 @@
     position: absolute;
     width: 334px;
     height: 347px;
-    left: 77%;
+    left: 88%;
     transform: translateX(-50%) rotate(2.99deg);
     top: -100px;
     z-index: 3;
