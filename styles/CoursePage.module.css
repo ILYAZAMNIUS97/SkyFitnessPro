@@ -144,7 +144,8 @@
 .ctaSection {
   width: 100%;
   max-width: 1160px;
-  height: 486px;
+  min-height: 486px;
+  height: auto;
   background: #ffffff;
   border-radius: 30px;
   box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
@@ -172,6 +173,9 @@
 
 .ctaContent {
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .ctaTitle {
@@ -284,7 +288,7 @@
   width: 600px;
   height: 450px;
   left: 490px;
-  top: 100px;
+  bottom: -80px;
   z-index: 1;
   transform: rotate(5deg);
 }
