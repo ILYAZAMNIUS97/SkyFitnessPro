@@ -250,63 +250,114 @@
 /* Мобильная версия */
 @media (max-width: 768px) {
   .container {
-    padding: 24px 16px 50px;
+    max-width: 375px;
+    padding: 40px 16px 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .pageTitle {
-    font-size: 32px;
-    margin-bottom: 24px;
+    width: 343px;
+    max-width: 100%;
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 110%;
+    color: #000000;
+    margin: 0 0 24px 0;
+    text-align: left;
   }
 
   .profileCard {
+    width: 343px;
+    max-width: 100%;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 20px;
-    padding: 24px 20px;
-    margin-bottom: 32px;
-    border-radius: 24px;
+    gap: 30px;
+    padding: 30px;
+    margin-bottom: 40px;
+    border-radius: 30px;
+    box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
   }
 
   .avatar {
-    width: 120px;
-    height: 120px;
+    width: 141px;
+    height: 141px;
+    border-radius: 50%;
   }
 
   .profileInfo {
+    width: 100%;
     align-items: center;
+    gap: 20px;
   }
 
   .userName {
+    font-family: 'Roboto', sans-serif;
     font-size: 24px;
+    font-weight: 500;
+    line-height: 110%;
   }
 
   .userLogin {
-    font-size: 15px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 110%;
+    color: #000000;
   }
 
   .logoutButton {
-    padding: 10px 40px;
+    width: 283px;
+    max-width: 100%;
+    height: 50px;
+    padding: 16px 26px;
+    margin-top: 10px;
+    font-family: 'Roboto', sans-serif;
     font-size: 16px;
+    font-weight: 400;
+    line-height: 110%;
+    border-radius: 46px;
+  }
+
+  .coursesSection {
+    width: 343px;
+    max-width: 100%;
+    margin-top: 0;
   }
 
   .sectionTitle {
-    font-size: 32px;
-    margin-bottom: 24px;
+    width: 343px;
+    max-width: 100%;
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 110%;
+    margin: 0 0 24px 0;
+    text-align: left;
   }
 
   .coursesGrid {
     grid-template-columns: 1fr;
     gap: 24px;
+    justify-items: center;
   }
 
   .noCourses {
-    padding: 40px 20px;
-    border-radius: 24px;
+    width: 343px;
+    max-width: 100%;
+    padding: 30px;
+    border-radius: 30px;
+    box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
   }
 
   .noCourses p {
+    font-family: 'Roboto', sans-serif;
     font-size: 16px;
+    font-weight: 400;
+    line-height: 110%;
   }
 
   .addCourseButton {
@@ -316,38 +367,19 @@
 }
 
 @media (max-width: 480px) {
-  .pageTitle {
-    font-size: 28px;
+  .container {
+    padding: 30px 12px 50px;
   }
 
-  .profileCard {
-    padding: 20px 16px;
-    border-radius: 20px;
-  }
-
-  .avatar {
-    width: 100px;
-    height: 100px;
-  }
-
-  .userName {
-    font-size: 22px;
-  }
-
-  .userLogin {
-    font-size: 14px;
+  .pageTitle,
+  .profileCard,
+  .coursesSection,
+  .sectionTitle,
+  .noCourses {
+    width: 100%;
   }
 
   .logoutButton {
-    padding: 10px 32px;
-    font-size: 15px;
-  }
-
-  .sectionTitle {
-    font-size: 28px;
-  }
-
-  .coursesGrid {
-    gap: 20px;
+    width: 100%;
   }
 }
