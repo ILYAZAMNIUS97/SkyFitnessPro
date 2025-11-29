@@ -8,6 +8,7 @@ import { ICourse } from '@/types/course';
 import dbConnect from '@/lib/mongodb';
 import Course from '@/models/Course';
 import styles from '@/styles/CoursePage.module.css';
+import { STORAGE_TOKEN_KEY, STORAGE_USER_KEY } from '@/lib/storageKeys';
 
 interface CoursePageProps {
   course: ICourse | null;
@@ -23,21 +24,29 @@ export default function CoursePage({ course }: CoursePageProps) {
 
   useEffect(() => {
     // Проверка авторизации
-    const token = localStorage.getItem('token');
-    const email = localStorage.getItem('userEmail');
+    const token = localStorage.getItem(STORAGE_TOKEN_KEY);
+    const userStr = localStorage.getItem(STORAGE_USER_KEY);
 
-    if (token && email) {
+    if (token && userStr) {
       setIsAuthenticated(true);
-      setUserEmail(email);
-      checkUserCourse(email);
+      try {
+        const user = JSON.parse(userStr);
+        setUserEmail(user.email);
+      } catch (e) {
+        console.error('Error parsing user from localStorage:', e);
+      }
+      checkUserCourse();
     }
   }, [course]);
 
-  const checkUserCourse = async (email: string) => {
+  const checkUserCourse = async () => {
     try {
+      const token = localStorage.getItem(STORAGE_TOKEN_KEY);
+      if (!token) return;
+
       const response = await fetch('/api/user/courses', {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -65,11 +74,12 @@ export default function CoursePage({ course }: CoursePageProps) {
 
     setIsLoading(true);
     try {
+      const token = localStorage.getItem(STORAGE_TOKEN_KEY);
       const response = await fetch('/api/user/courses', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ courseId: course?._id }),
       });
@@ -91,13 +101,18 @@ export default function CoursePage({ course }: CoursePageProps) {
 
   const handleAuthSuccess = () => {
     setIsAuthModalOpen(false);
-    const token = localStorage.getItem('token');
-    const email = localStorage.getItem('userEmail');
+    const token = localStorage.getItem(STORAGE_TOKEN_KEY);
+    const userStr = localStorage.getItem(STORAGE_USER_KEY);
 
-    if (token && email) {
+    if (token && userStr) {
       setIsAuthenticated(true);
-      setUserEmail(email);
-      checkUserCourse(email);
+      try {
+        const user = JSON.parse(userStr);
+        setUserEmail(user.email);
+      } catch (e) {
+        console.error('Error parsing user from localStorage:', e);
+      }
+      checkUserCourse();
     }
   };
 

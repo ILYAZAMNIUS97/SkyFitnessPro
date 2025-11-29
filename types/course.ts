@@ -35,6 +35,7 @@ export interface IExercise {
   _id?: string;
   name: string;
   quantity: number; // количество повторений
+  unit?: 'повторения' | 'минуты' | 'секунды';
 }
 
 export interface IUser {
