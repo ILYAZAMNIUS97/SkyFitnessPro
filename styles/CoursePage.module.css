@@ -427,12 +427,19 @@
     align-items: center;
   }
 
+  .fittingSection > *,
+  .directionsSection > * {
+    width: 343px;
+    max-width: 100%;
+  }
+
   .sectionTitle {
     font-family: 'Roboto', sans-serif;
     font-size: 24px;
     font-weight: 500;
     line-height: 110%;
     margin-bottom: 20px;
+    text-align: left;
   }
 
   .fittingCards {
