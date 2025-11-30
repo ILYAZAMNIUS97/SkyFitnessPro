@@ -53,3 +53,4 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ onClose, autoCloseDelay = 2
 };
 
 export default SuccessModal;
+

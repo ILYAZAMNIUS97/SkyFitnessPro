@@ -96,3 +96,4 @@ const ProfileCourseCard: React.FC<ProfileCourseCardProps> = ({
 };
 
 export default ProfileCourseCard;
+
