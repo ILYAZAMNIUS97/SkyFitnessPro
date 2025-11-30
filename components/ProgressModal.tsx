@@ -1,53 +1,75 @@
+/**
+ * @fileoverview Модальное окно для ввода прогресса тренировки
+ * Позволяет пользователю указать количество выполненных упражнений
+ */
+
 import { useState, useEffect } from 'react';
+import { useModal } from '@/hooks/useModal';
 import styles from '@/styles/ProgressModal.module.css';
 import { IExercise } from '@/types/course';
 
+/**
+ * Структура прогресса упражнения
+ */
+interface ExerciseProgress {
+  exerciseName: string;
+  completed: number;
+}
+
+/**
+ * Props компонента ProgressModal
+ */
 interface ProgressModalProps {
+  /** Список упражнений тренировки */
   exercises: IExercise[];
-  currentProgress: { exerciseName: string; completed: number }[];
-  onSave: (progress: { exerciseName: string; completed: number }[]) => void;
+  /** Текущий прогресс пользователя */
+  currentProgress: ExerciseProgress[];
+  /** Callback сохранения прогресса */
+  onSave: (progress: ExerciseProgress[]) => void;
+  /** Функция закрытия модального окна */
   onClose: () => void;
 }
 
+/**
+ * Модальное окно ввода прогресса
+ *
+ * @example
+ * <ProgressModal
+ *   exercises={workout.exercises}
+ *   currentProgress={userProgress}
+ *   onSave={handleSaveProgress}
+ *   onClose={() => setShowProgress(false)}
+ * />
+ */
 const ProgressModal: React.FC<ProgressModalProps> = ({
   exercises,
   currentProgress,
   onSave,
   onClose,
 }) => {
-  // Инициализируем состояние формы
+  // Состояние формы: значения полей ввода
   const [formValues, setFormValues] = useState<Record<string, string>>({});
 
+  // Используем хук для управления модальным окном
+  const { handleOverlayClick } = useModal({ onClose });
+
+  // Инициализация значений формы при монтировании
   useEffect(() => {
     const initial: Record<string, string> = {};
+
     exercises.forEach((exercise) => {
       const existing = currentProgress.find((p) => p.exerciseName === exercise.name);
       initial[exercise.name] = existing ? String(existing.completed) : '';
     });
+
     setFormValues(initial);
   }, [exercises, currentProgress]);
 
-  // Закрытие по Escape
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [onClose]);
-
-  // Клик по оверлею (закрытие)
-  const handleOverlayClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
-  // Обновление значения поля
+  /**
+   * Обработчик изменения значения поля
+   * Разрешает только числовые значения
+   */
   const handleInputChange = (exerciseName: string, value: string) => {
-    // Разрешаем только числа
     if (value === '' || /^\d+$/.test(value)) {
       setFormValues((prev) => ({
         ...prev,
@@ -56,13 +78,17 @@ const ProgressModal: React.FC<ProgressModalProps> = ({
     }
   };
 
-  // Сохранение прогресса
+  /**
+   * Обработчик отправки формы
+   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const progress = exercises.map((exercise) => ({
+
+    const progress: ExerciseProgress[] = exercises.map((exercise) => ({
       exerciseName: exercise.name,
       completed: parseInt(formValues[exercise.name] || '0', 10),
     }));
+
     onSave(progress);
   };
 
@@ -93,7 +119,7 @@ const ProgressModal: React.FC<ProgressModalProps> = ({
         </form>
 
         <div className={styles.footer}>
-          <button className={styles.submitButton} onClick={handleSubmit}>
+          <button type="button" className={styles.submitButton} onClick={handleSubmit}>
             Сохранить
           </button>
         </div>
@@ -103,4 +129,3 @@ const ProgressModal: React.FC<ProgressModalProps> = ({
 };
 
 export default ProgressModal;
-

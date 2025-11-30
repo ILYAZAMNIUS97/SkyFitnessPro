@@ -1,11 +1,18 @@
+/**
+ * @fileoverview API роут для регистрации нового пользователя
+ * @route POST /api/auth/register
+ */
+
 import type { NextApiRequest, NextApiResponse } from 'next';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
+import { createToken } from '@/lib/auth';
+import { HTTP_STATUS, API_MESSAGES, BCRYPT_SALT_ROUNDS } from '@/lib/constants';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'skyfitnesspro-dev-secret';
-
+/**
+ * Тип ответа API регистрации
+ */
 interface AuthResponse {
   success: boolean;
   message: string;
@@ -17,48 +24,80 @@ interface AuthResponse {
   };
 }
 
+/**
+ * Обработчик регистрации нового пользователя
+ *
+ * @param req - Запрос с email, password и confirmPassword в body
+ * @param res - Ответ с токеном и данными пользователя
+ *
+ * @example
+ * // POST /api/auth/register
+ * // Body: { email: "user@example.com", password: "123456", confirmPassword: "123456" }
+ * // Response: { success: true, token: "...", user: { _id, email, name } }
+ */
 export default async function handler(req: NextApiRequest, res: NextApiResponse<AuthResponse>) {
+  // Проверка метода
   if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, message: 'Метод не поддерживается' });
+    return res.status(HTTP_STATUS.METHOD_NOT_ALLOWED).json({
+      success: false,
+      message: API_MESSAGES.METHOD_NOT_ALLOWED,
+    });
   }
 
   const { email, password, confirmPassword, name } = req.body ?? {};
 
+  // Валидация обязательных полей
   if (!email || !password || !confirmPassword) {
-    return res.status(400).json({ success: false, message: 'Заполните обязательные поля' });
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      success: false,
+      message: 'Заполните обязательные поля',
+    });
   }
 
+  // Проверка совпадения паролей
   if (password !== confirmPassword) {
-    return res.status(400).json({ success: false, message: 'Пароли не совпадают' });
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      success: false,
+      message: 'Пароли не совпадают',
+    });
   }
 
   try {
     await dbConnect();
 
+    // Нормализация email
     const normalizedEmail = String(email).toLowerCase().trim();
+
+    // Проверка существующего пользователя
     const existingUser = await User.findOne({ email: normalizedEmail });
 
     if (existingUser) {
-      return res
-        .status(409)
-        .json({ success: false, message: 'Данная почта уже используется. Попробуйте войти.' });
+      return res.status(HTTP_STATUS.CONFLICT).json({
+        success: false,
+        message: 'Данная почта уже используется. Попробуйте войти.',
+      });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const fallbackName =
+    // Хеширование пароля
+    const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
+
+    // Формирование имени пользователя
+    const userName =
       (typeof name === 'string' && name.trim()) ||
       normalizedEmail.split('@')[0] ||
       'Новый пользователь';
 
+    // Создание пользователя
     const user = await User.create({
       email: normalizedEmail,
       password: hashedPassword,
-      name: fallbackName,
+      name: userName,
     });
 
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
+    // Создание токена
+    const token = createToken(user._id.toString());
 
-    return res.status(201).json({
+    return res.status(HTTP_STATUS.CREATED).json({
       success: true,
       message: 'Пользователь создан',
       token,
@@ -70,6 +109,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     });
   } catch (error) {
     console.error('Register error:', error);
-    return res.status(500).json({ success: false, message: 'Не удалось завершить регистрацию' });
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: 'Не удалось завершить регистрацию',
+    });
   }
 }

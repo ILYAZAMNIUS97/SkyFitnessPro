@@ -1,27 +1,55 @@
+/**
+ * @fileoverview Основной layout приложения
+ * Содержит Header, основной контент и модальное окно авторизации
+ */
+
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 import Header from './Header';
 import ScrollToTop from './ScrollToTop';
 import AuthModal from './AuthModal';
+import { clearAuth, getStoredUser } from '@/hooks/useAuth';
 import styles from '@/styles/Layout.module.css';
-import { STORAGE_TOKEN_KEY, STORAGE_USER_KEY } from '@/lib/storageKeys';
 import { AuthUser } from '@/types/auth';
 
+/**
+ * Props компонента Layout
+ */
 interface LayoutProps {
+  /** Дочерние элементы (содержимое страницы) */
   children: ReactNode;
 }
 
+/**
+ * Основной layout приложения
+ * Оборачивает все страницы и предоставляет общую функциональность
+ *
+ * @example
+ * // В _app.tsx или на странице
+ * <Layout>
+ *   <YourPageContent />
+ * </Layout>
+ */
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isAuthModalOpen, setAuthModalOpen] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
 
+  /**
+   * Открытие модального окна авторизации
+   */
   const openAuthModal = useCallback(() => {
     setAuthModalOpen(true);
   }, []);
 
+  /**
+   * Закрытие модального окна авторизации
+   */
   const closeAuthModal = useCallback(() => {
     setAuthModalOpen(false);
   }, []);
 
+  /**
+   * Обработчик успешной авторизации
+   */
   const handleAuthSuccess = useCallback(
     (authUser: AuthUser) => {
       setUser(authUser);
@@ -30,37 +58,36 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     [closeAuthModal]
   );
 
+  /**
+   * Выход из аккаунта
+   */
   const handleLogout = useCallback(() => {
     setUser(null);
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(STORAGE_USER_KEY);
-      window.localStorage.removeItem(STORAGE_TOKEN_KEY);
-    }
+    clearAuth();
   }, []);
 
+  /**
+   * Загрузка данных пользователя из localStorage при монтировании
+   */
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    const storedUser = window.localStorage.getItem(STORAGE_USER_KEY);
+    const storedUser = getStoredUser();
     if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.warn('Failed to parse stored user', error);
-        window.localStorage.removeItem(STORAGE_USER_KEY);
-      }
+      setUser(storedUser);
     }
   }, []);
 
   return (
     <div className={styles.layout}>
+      {/* Шапка */}
       <Header onLoginClick={openAuthModal} user={user} onLogout={handleLogout} />
+
+      {/* Основной контент */}
       <main className={styles.main}>
         {children}
         <ScrollToTop />
       </main>
+
+      {/* Модальное окно авторизации */}
       {isAuthModalOpen && <AuthModal onClose={closeAuthModal} onSuccess={handleAuthSuccess} />}
     </div>
   );

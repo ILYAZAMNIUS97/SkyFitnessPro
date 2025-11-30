@@ -1,80 +1,93 @@
+/**
+ * @fileoverview Страница отдельного курса
+ * Отображает подробную информацию о курсе и позволяет добавить его
+ */
+
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Layout from '@/components/Layout';
 import AuthModal from '@/components/AuthModal';
+import { getStoredToken, getStoredUser } from '@/hooks/useAuth';
+import { serializeDocument } from '@/lib/utils';
 import { ICourse } from '@/types/course';
 import dbConnect from '@/lib/mongodb';
 import Course from '@/models/Course';
 import styles from '@/styles/CoursePage.module.css';
-import { STORAGE_TOKEN_KEY, STORAGE_USER_KEY } from '@/lib/storageKeys';
 
+/**
+ * Props страницы курса
+ */
 interface CoursePageProps {
+  /** Данные курса (null если не найден) */
   course: ICourse | null;
 }
 
+/**
+ * Страница курса
+ * Отображает описание курса, направления и CTA-секцию
+ */
 export default function CoursePage({ course }: CoursePageProps) {
   const router = useRouter();
+
+  // Состояние компонента
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [hasCourse, setHasCourse] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    // Проверка авторизации
-    const token = localStorage.getItem(STORAGE_TOKEN_KEY);
-    const userStr = localStorage.getItem(STORAGE_USER_KEY);
+  /**
+   * Проверяет, добавлен ли курс у пользователя
+   */
+  const checkUserCourse = useCallback(async () => {
+    const token = getStoredToken();
+    if (!token || !course) return;
 
-    if (token && userStr) {
-      setIsAuthenticated(true);
-      try {
-        const user = JSON.parse(userStr);
-        setUserEmail(user.email);
-      } catch (e) {
-        console.error('Error parsing user from localStorage:', e);
-      }
-      checkUserCourse();
-    }
-  }, [course]);
-
-  const checkUserCourse = async () => {
     try {
-      const token = localStorage.getItem(STORAGE_TOKEN_KEY);
-      if (!token) return;
-
       const response = await fetch('/api/user/courses', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.ok) {
         const data = await response.json();
-        const hasThisCourse = data.courses?.includes(course?._id);
-        setHasCourse(hasThisCourse);
+        setHasCourse(data.courses?.includes(course._id) ?? false);
       }
     } catch (error) {
-      console.error('Error checking user courses:', error);
+      console.error('Ошибка проверки курсов:', error);
     }
-  };
+  }, [course]);
 
-  const handleAddCourse = async () => {
+  /**
+   * Проверка авторизации при монтировании
+   */
+  useEffect(() => {
+    const token = getStoredToken();
+    const user = getStoredUser();
+
+    if (token && user) {
+      setIsAuthenticated(true);
+      checkUserCourse();
+    }
+  }, [checkUserCourse]);
+
+  /**
+   * Обработчик добавления курса
+   */
+  const handleAddCourse = useCallback(async () => {
     if (!isAuthenticated) {
       setIsAuthModalOpen(true);
       return;
     }
 
     if (hasCourse) {
-      // Если курс уже добавлен, переходим в профиль
       router.push('/profile');
       return;
     }
 
     setIsLoading(true);
     try {
-      const token = localStorage.getItem(STORAGE_TOKEN_KEY);
+      const token = getStoredToken();
       const response = await fetch('/api/user/courses', {
         method: 'POST',
         headers: {
@@ -92,30 +105,32 @@ export default function CoursePage({ course }: CoursePageProps) {
         alert(data.message || 'Ошибка при добавлении курса');
       }
     } catch (error) {
-      console.error('Error adding course:', error);
+      console.error('Ошибка добавления курса:', error);
       alert('Произошла ошибка при добавлении курса');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isAuthenticated, hasCourse, course, router]);
 
-  const handleAuthSuccess = () => {
+  /**
+   * Обработчик успешной авторизации
+   */
+  const handleAuthSuccess = useCallback(() => {
     setIsAuthModalOpen(false);
-    const token = localStorage.getItem(STORAGE_TOKEN_KEY);
-    const userStr = localStorage.getItem(STORAGE_USER_KEY);
+    setIsAuthenticated(true);
+    checkUserCourse();
+  }, [checkUserCourse]);
 
-    if (token && userStr) {
-      setIsAuthenticated(true);
-      try {
-        const user = JSON.parse(userStr);
-        setUserEmail(user.email);
-      } catch (e) {
-        console.error('Error parsing user from localStorage:', e);
-      }
-      checkUserCourse();
-    }
+  /**
+   * Получение текста кнопки
+   */
+  const getButtonText = (): string => {
+    if (hasCourse) return 'Перейти к тренировкам';
+    if (!isAuthenticated) return 'Войдите, чтобы добавить курс';
+    return 'Добавить курс';
   };
 
+  // Курс не найден
   if (!course) {
     return (
       <Layout>
@@ -138,12 +153,6 @@ export default function CoursePage({ course }: CoursePageProps) {
       </Layout>
     );
   }
-
-  const getButtonText = () => {
-    if (hasCourse) return 'Перейти к тренировкам';
-    if (!isAuthenticated) return 'Войдите, чтобы добавить курс';
-    return 'Добавить курс';
-  };
 
   return (
     <Layout>
@@ -205,7 +214,7 @@ export default function CoursePage({ course }: CoursePageProps) {
           />
         </div>
 
-        {/* Начните путь к новому телу */}
+        {/* CTA секция */}
         <section className={styles.ctaSection}>
           <div className={styles.ctaVectorContainer}>
             <img src="/img/vector-6084.png" alt="" className={styles.ctaVectorBack} />
@@ -244,6 +253,7 @@ export default function CoursePage({ course }: CoursePageProps) {
         </section>
       </div>
 
+      {/* Модальное окно авторизации */}
       {isAuthModalOpen && (
         <AuthModal onClose={() => setIsAuthModalOpen(false)} onSuccess={handleAuthSuccess} />
       )}
@@ -251,7 +261,10 @@ export default function CoursePage({ course }: CoursePageProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+/**
+ * Серверная загрузка данных курса
+ */
+export const getServerSideProps: GetServerSideProps<CoursePageProps> = async (context) => {
   const { id } = context.params as { id: string };
 
   try {
@@ -259,33 +272,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const course = await Course.findById(id).lean();
 
     if (!course) {
-      return {
-        props: {
-          course: null,
-        },
-      };
+      return { props: { course: null } };
     }
-
-    // Преобразуем MongoDB объект в простой объект для сериализации
-    const serializedCourse = {
-      ...course,
-      _id: course._id.toString(),
-      createdAt: course.createdAt?.toISOString(),
-      updatedAt: course.updatedAt?.toISOString(),
-      workouts: course.workouts.map((id: any) => id.toString()),
-    };
 
     return {
       props: {
-        course: serializedCourse,
+        course: serializeDocument<ICourse>(course as ICourse),
       },
     };
   } catch (error) {
-    console.error('Error fetching course:', error);
-    return {
-      props: {
-        course: null,
-      },
-    };
+    console.error('Ошибка загрузки курса:', error);
+    return { props: { course: null } };
   }
 };

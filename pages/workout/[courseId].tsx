@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Страница тренировки
+ * Отображает видео тренировки и список упражнений с прогрессом
+ */
+
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useCallback } from 'react';
@@ -5,15 +10,28 @@ import Layout from '@/components/Layout';
 import WorkoutSelectModal from '@/components/WorkoutSelectModal';
 import ProgressModal from '@/components/ProgressModal';
 import SuccessModal from '@/components/SuccessModal';
+import { getStoredToken, getStoredUser } from '@/hooks/useAuth';
+import { getYouTubeEmbedUrl, calculateProgress } from '@/lib/utils';
 import { ICourse, IWorkout, IUserProgress } from '@/types/course';
-import { STORAGE_TOKEN_KEY, STORAGE_USER_KEY } from '@/lib/storageKeys';
 import styles from '@/styles/WorkoutPage.module.css';
 
+/**
+ * Структура прогресса упражнения
+ */
+interface ExerciseProgress {
+  exerciseName: string;
+  completed: number;
+}
+
+/**
+ * Страница тренировки
+ * Защищённая страница, требует авторизации
+ */
 export default function WorkoutPage() {
   const router = useRouter();
   const { courseId } = router.query;
 
-  // Состояния
+  // Состояние данных
   const [course, setCourse] = useState<ICourse | null>(null);
   const [workouts, setWorkouts] = useState<IWorkout[]>([]);
   const [selectedWorkout, setSelectedWorkout] = useState<IWorkout | null>(null);
@@ -21,17 +39,19 @@ export default function WorkoutPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Модальные окна
+  // Состояние модальных окон
   const [showWorkoutSelect, setShowWorkoutSelect] = useState(false);
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  // Загрузка данных курса и тренировок
+  /**
+   * Загрузка данных курса и тренировок
+   */
   const loadData = useCallback(async () => {
     if (!courseId || typeof courseId !== 'string') return;
 
-    const token = localStorage.getItem(STORAGE_TOKEN_KEY);
-    const user = localStorage.getItem(STORAGE_USER_KEY);
+    const token = getStoredToken();
+    const user = getStoredUser();
 
     if (!token || !user) {
       router.push('/');
@@ -53,48 +73,24 @@ export default function WorkoutPage() {
       setCourse(courseData.data);
 
       // Загружаем тренировки
-      console.log('=== Loading workouts ===');
-      console.log('CourseId:', courseId);
-      console.log('CourseId type:', typeof courseId);
-      console.log('Fetching from:', `/api/workouts/${courseId}`);
-
       const workoutsResponse = await fetch(`/api/workouts/${courseId}`);
-      console.log('Workouts response status:', workoutsResponse.status);
-
       const workoutsData = await workoutsResponse.json();
-      console.log('Workouts response data:', workoutsData);
 
       if (workoutsData.success && Array.isArray(workoutsData.data)) {
-        console.log('Workouts loaded successfully:', workoutsData.data.length);
         setWorkouts(workoutsData.data);
-        // Показываем модальное окно выбора тренировки
         if (workoutsData.data.length > 0) {
           setShowWorkoutSelect(true);
         } else {
           setError('Для этого курса пока нет тренировок');
         }
       } else {
-        console.error('Failed to load workouts:', workoutsData);
         setWorkouts([]);
-        if (workoutsData.debug) {
-          console.error('Debug info:', workoutsData.debug);
-          if (workoutsData.debug.totalWorkoutsInDB === 0) {
-            setError('В базе данных нет тренировок. Запустите seed-скрипт: npm run seed');
-          } else {
-            setError(
-              'Тренировки для этого курса не найдены. Возможно, курс был удален или обновлен. Обновите страницу профиля.'
-            );
-          }
-        } else {
-          setError(workoutsData.error || 'Не удалось загрузить тренировки');
-        }
+        setError(workoutsData.error || 'Не удалось загрузить тренировки');
       }
 
       // Загружаем прогресс пользователя
       const progressResponse = await fetch(`/api/user/progress?courseId=${courseId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       const progressData = await progressResponse.json();
 
@@ -102,7 +98,7 @@ export default function WorkoutPage() {
         setUserProgress(progressData.progress || []);
       }
     } catch (err) {
-      console.error('Error loading workout data:', err);
+      console.error('Ошибка загрузки данных:', err);
       setError('Не удалось загрузить данные тренировки');
     } finally {
       setLoading(false);
@@ -113,136 +109,112 @@ export default function WorkoutPage() {
     loadData();
   }, [loadData]);
 
-  // Выбор тренировки
-  const handleWorkoutSelect = (workoutId: string) => {
-    console.log('=== Selecting workout ===');
-    console.log('WorkoutId:', workoutId);
-    console.log(
-      'Available workouts:',
-      workouts.map((w) => ({ _id: w._id, title: w.title }))
-    );
+  /**
+   * Выбор тренировки
+   */
+  const handleWorkoutSelect = useCallback(
+    (workoutId: string) => {
+      const workout = workouts.find((w) => w._id === workoutId);
+      if (workout) {
+        setSelectedWorkout(workout);
+      }
+    },
+    [workouts]
+  );
 
-    const workout = workouts.find((w) => w._id === workoutId);
-    if (workout) {
-      console.log('Workout found:', workout);
-      console.log('Workout videoUrl:', workout.videoUrl);
-      setSelectedWorkout(workout);
-    } else {
-      console.error('Workout not found!', workoutId);
-    }
-  };
+  /**
+   * Сохранение прогресса
+   */
+  const handleSaveProgress = useCallback(
+    async (progress: ExerciseProgress[]) => {
+      if (!selectedWorkout || !courseId) return;
 
-  // Закрытие модального окна выбора тренировки
-  const handleWorkoutSelectClose = () => {
-    setShowWorkoutSelect(false);
-  };
+      const token = getStoredToken();
+      if (!token) {
+        router.push('/');
+        return;
+      }
 
-  // Открытие модального окна прогресса
-  const handleOpenProgressModal = () => {
-    setShowProgressModal(true);
-  };
-
-  // Сохранение прогресса
-  const handleSaveProgress = async (progress: { exerciseName: string; completed: number }[]) => {
-    if (!selectedWorkout || !courseId) return;
-
-    const token = localStorage.getItem(STORAGE_TOKEN_KEY);
-    if (!token) {
-      router.push('/');
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/user/progress', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          courseId,
-          workoutId: selectedWorkout._id,
-          completedExercises: progress,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        // Обновляем локальный прогресс
-        setUserProgress((prev) => {
-          const existingIndex = prev.findIndex(
-            (p) => p.courseId === courseId && p.workoutId === selectedWorkout._id
-          );
-          const newProgress = {
-            courseId: courseId as string,
+      try {
+        const response = await fetch('/api/user/progress', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            courseId,
             workoutId: selectedWorkout._id,
             completedExercises: progress,
-            completedAt: new Date(),
-          };
-
-          if (existingIndex !== -1) {
-            const updated = [...prev];
-            updated[existingIndex] = newProgress;
-            return updated;
-          }
-          return [...prev, newProgress];
+          }),
         });
 
-        // Закрываем модальное окно прогресса и показываем успех
-        setShowProgressModal(false);
-        setShowSuccessModal(true);
-      }
-    } catch (err) {
-      console.error('Error saving progress:', err);
-    }
-  };
+        const data = await response.json();
 
-  // Получить текущий прогресс для тренировки
-  const getCurrentProgress = () => {
+        if (data.success) {
+          // Обновляем локальный прогресс
+          setUserProgress((prev) => {
+            const newProgress: IUserProgress = {
+              courseId: courseId as string,
+              workoutId: selectedWorkout._id,
+              completedExercises: progress,
+              completedAt: new Date(),
+            };
+
+            const existingIndex = prev.findIndex(
+              (p) => p.courseId === courseId && p.workoutId === selectedWorkout._id
+            );
+
+            if (existingIndex !== -1) {
+              const updated = [...prev];
+              updated[existingIndex] = newProgress;
+              return updated;
+            }
+            return [...prev, newProgress];
+          });
+
+          setShowProgressModal(false);
+          setShowSuccessModal(true);
+        }
+      } catch (err) {
+        console.error('Ошибка сохранения прогресса:', err);
+      }
+    },
+    [selectedWorkout, courseId, router]
+  );
+
+  /**
+   * Получение текущего прогресса для тренировки
+   */
+  const getCurrentProgress = useCallback((): ExerciseProgress[] => {
     if (!selectedWorkout) return [];
     const progress = userProgress.find((p) => p.workoutId === selectedWorkout._id);
     return progress?.completedExercises || [];
-  };
+  }, [selectedWorkout, userProgress]);
 
-  // Получить процент выполнения упражнения
-  const getExerciseProgress = (exerciseName: string, targetQuantity: number) => {
-    const currentProgressData = getCurrentProgress();
-    const exerciseProgress = currentProgressData.find((p) => p.exerciseName === exerciseName);
-    if (!exerciseProgress || !targetQuantity) return 0;
-    return Math.min(Math.round((exerciseProgress.completed / targetQuantity) * 100), 100);
-  };
+  /**
+   * Получение процента выполнения упражнения
+   */
+  const getExerciseProgress = useCallback(
+    (exerciseName: string, targetQuantity: number): number => {
+      const currentProgressData = getCurrentProgress();
+      const exerciseProgress = currentProgressData.find((p) => p.exerciseName === exerciseName);
+      if (!exerciseProgress || !targetQuantity) return 0;
+      return calculateProgress(exerciseProgress.completed, targetQuantity);
+    },
+    [getCurrentProgress]
+  );
 
-  // Проверить, есть ли прогресс у тренировки
-  const hasProgress = () => {
+  /**
+   * Проверка наличия прогресса
+   */
+  const hasProgress = useCallback((): boolean => {
     if (!selectedWorkout) return false;
     return userProgress.some((p) => p.workoutId === selectedWorkout._id);
-  };
+  }, [selectedWorkout, userProgress]);
 
-  // Преобразование YouTube URL в embed URL
-  const getYouTubeEmbedUrl = (url: string) => {
-    if (!url) return null;
-
-    // Форматы:
-    // https://www.youtube.com/watch?v=VIDEO_ID
-    // https://youtu.be/VIDEO_ID
-    // https://www.youtube.com/embed/VIDEO_ID
-    let videoId = '';
-
-    if (url.includes('youtube.com/watch')) {
-      const urlParams = new URLSearchParams(url.split('?')[1]);
-      videoId = urlParams.get('v') || '';
-    } else if (url.includes('youtu.be/')) {
-      videoId = url.split('youtu.be/')[1]?.split('?')[0] || '';
-    } else if (url.includes('youtube.com/embed/')) {
-      videoId = url.split('youtube.com/embed/')[1]?.split('?')[0] || '';
-    }
-
-    if (videoId) {
-      return `https://www.youtube.com/embed/${videoId}`;
-    }
-    return null;
-  };
+  // Embed URL для видео
+  const embedUrl = selectedWorkout?.videoUrl ? getYouTubeEmbedUrl(selectedWorkout.videoUrl) : null;
 
   // Состояние загрузки
   if (loading) {
@@ -280,8 +252,6 @@ export default function WorkoutPage() {
       </Layout>
     );
   }
-
-  const embedUrl = selectedWorkout?.videoUrl ? getYouTubeEmbedUrl(selectedWorkout.videoUrl) : null;
 
   return (
     <Layout>
@@ -342,7 +312,7 @@ export default function WorkoutPage() {
               })}
             </div>
 
-            <button className={styles.progressButton} onClick={handleOpenProgressModal}>
+            <button className={styles.progressButton} onClick={() => setShowProgressModal(true)}>
               {hasProgress() ? 'Обновить свой прогресс' : 'Заполнить свой прогресс'}
             </button>
           </div>
@@ -357,7 +327,7 @@ export default function WorkoutPage() {
           selectedWorkoutId={selectedWorkout?._id || null}
           userProgress={userProgress}
           onSelect={handleWorkoutSelect}
-          onClose={handleWorkoutSelectClose}
+          onClose={() => setShowWorkoutSelect(false)}
         />
       )}
 

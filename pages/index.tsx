@@ -1,29 +1,34 @@
+/**
+ * @fileoverview Главная страница приложения
+ * Отображает список доступных курсов
+ */
+
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import Layout from '@/components/Layout';
 import CourseCard from '@/components/CourseCard';
+import { sortCoursesByOrder, serializeDocuments } from '@/lib/utils';
+import { COURSES_DISPLAY_ORDER } from '@/lib/constants';
 import { ICourse } from '@/types/course';
 import dbConnect from '@/lib/mongodb';
 import Course from '@/models/Course';
 import styles from '@/styles/Home.module.css';
 
+/**
+ * Props главной страницы
+ */
 interface HomeProps {
+  /** Список курсов */
   courses: ICourse[];
 }
 
+/**
+ * Главная страница
+ * Отображает hero-секцию и сетку карточек курсов
+ */
 export default function Home({ courses }: HomeProps) {
-  // Определяем правильный порядок карточек согласно макету
-  const courseOrder = ['Йога', 'Стретчинг', 'Фитнес', 'Степ-аэробика', 'Бодифлекс'];
-
-  // Сортируем курсы в нужном порядке
-  const sortedCourses = [...courses].sort((a, b) => {
-    const indexA = courseOrder.indexOf(a.nameRU);
-    const indexB = courseOrder.indexOf(b.nameRU);
-    // Если курс не найден в списке, помещаем его в конец
-    if (indexA === -1) return 1;
-    if (indexB === -1) return -1;
-    return indexA - indexB;
-  });
+  // Сортируем курсы в заданном порядке
+  const sortedCourses = sortCoursesByOrder(courses, COURSES_DISPLAY_ORDER);
 
   return (
     <Layout>
@@ -38,6 +43,7 @@ export default function Home({ courses }: HomeProps) {
       </Head>
 
       <div className={styles.container}>
+        {/* Hero секция */}
         <section className={styles.hero}>
           <div className={styles.heroContent}>
             <h1 className={styles.title}>Начните заниматься спортом и улучшите качество жизни</h1>
@@ -45,6 +51,7 @@ export default function Home({ courses }: HomeProps) {
           <div className={styles.heroCallout}>Измени своё тело за полгода!</div>
         </section>
 
+        {/* Секция курсов */}
         <section className={styles.courses}>
           {sortedCourses.length === 0 ? (
             <div className={styles.empty}>
@@ -63,27 +70,22 @@ export default function Home({ courses }: HomeProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+/**
+ * Серверная загрузка данных
+ * Получает список курсов из базы данных
+ */
+export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
   try {
     await dbConnect();
     const courses = await Course.find({}).sort({ createdAt: -1 }).lean();
 
-    // Преобразуем MongoDB объекты в простые объекты для сериализации
-    const serializedCourses = courses.map((course: any) => ({
-      ...course,
-      _id: course._id.toString(),
-      createdAt: course.createdAt?.toISOString(),
-      updatedAt: course.updatedAt?.toISOString(),
-      workouts: course.workouts.map((id: any) => id.toString()),
-    }));
-
     return {
       props: {
-        courses: serializedCourses,
+        courses: serializeDocuments<ICourse>(courses as ICourse[]),
       },
     };
   } catch (error) {
-    console.error('Error fetching courses:', error);
+    console.error('Ошибка загрузки курсов:', error);
     return {
       props: {
         courses: [],

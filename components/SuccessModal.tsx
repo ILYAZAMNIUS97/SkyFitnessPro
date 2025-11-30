@@ -1,38 +1,41 @@
-import { useEffect } from 'react';
+/**
+ * @fileoverview Модальное окно успешного сохранения прогресса
+ * Отображается после успешного сохранения и автоматически закрывается
+ */
+
+import { useModal, useAutoClose } from '@/hooks/useModal';
+import { SUCCESS_MODAL_AUTO_CLOSE_DELAY } from '@/lib/constants';
 import styles from '@/styles/SuccessModal.module.css';
 
+/**
+ * Props компонента SuccessModal
+ */
 interface SuccessModalProps {
+  /** Функция закрытия модального окна */
   onClose: () => void;
-  autoCloseDelay?: number; // миллисекунды
+  /** Задержка автозакрытия в мс (по умолчанию 2000) */
+  autoCloseDelay?: number;
 }
 
-const SuccessModal: React.FC<SuccessModalProps> = ({ onClose, autoCloseDelay = 2000 }) => {
-  // Автозакрытие через указанное время
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onClose();
-    }, autoCloseDelay);
-
-    return () => clearTimeout(timer);
-  }, [onClose, autoCloseDelay]);
-
-  // Закрытие по Escape
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [onClose]);
-
-  // Клик по оверлею (закрытие)
-  const handleOverlayClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
+/**
+ * Модальное окно успеха
+ * Автоматически закрывается через указанное время
+ *
+ * @example
+ * {showSuccess && (
+ *   <SuccessModal
+ *     onClose={() => setShowSuccess(false)}
+ *     autoCloseDelay={3000}
+ *   />
+ * )}
+ */
+const SuccessModal: React.FC<SuccessModalProps> = ({
+  onClose,
+  autoCloseDelay = SUCCESS_MODAL_AUTO_CLOSE_DELAY,
+}) => {
+  // Используем хуки для управления модальным окном
+  const { handleOverlayClick } = useModal({ onClose, blockScroll: false });
+  useAutoClose(onClose, autoCloseDelay);
 
   return (
     <div className={styles.overlay} onClick={handleOverlayClick}>
@@ -53,4 +56,3 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ onClose, autoCloseDelay = 2
 };
 
 export default SuccessModal;
-

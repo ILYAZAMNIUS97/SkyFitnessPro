@@ -1,19 +1,31 @@
+/**
+ * @fileoverview Карточка авторизации с формами входа и регистрации
+ * Содержит валидацию форм через React Hook Form и Zod
+ */
+
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { persistAuth } from '@/hooks/useAuth';
 import styles from '@/styles/AuthCard.module.css';
-import { STORAGE_TOKEN_KEY, STORAGE_USER_KEY } from '@/lib/storageKeys';
 import { AuthUser } from '@/types/auth';
 
+/** Режим авторизации: вход или регистрация */
 type AuthMode = 'login' | 'register';
 
+// ============================================================================
+// Схемы валидации
+// ============================================================================
+
+/** Схема валидации формы входа */
 const loginSchema = z.object({
   email: z.string().email('Введите корректный e-mail'),
   password: z.string().min(6, 'Минимум 6 символов'),
 });
 
+/** Схема валидации формы регистрации */
 const registerSchema = z
   .object({
     email: z.string().email('Введите корректный e-mail'),
@@ -25,13 +37,27 @@ const registerSchema = z
     path: ['confirmPassword'],
   });
 
+/** Тип значений формы входа */
 type LoginFormValues = z.infer<typeof loginSchema>;
+
+/** Тип значений формы регистрации */
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
+// ============================================================================
+// Типы
+// ============================================================================
+
+/**
+ * Props компонента AuthCard
+ */
 interface AuthCardProps {
+  /** Callback при успешной авторизации */
   onSuccess?: (user: AuthUser) => void;
 }
 
+/**
+ * Ответ API авторизации
+ */
 interface AuthResponse {
   success: boolean;
   message?: string;
@@ -39,106 +65,124 @@ interface AuthResponse {
   user: AuthUser;
 }
 
+// ============================================================================
+// Компонент
+// ============================================================================
+
+/**
+ * Карточка авторизации
+ * Отображает форму входа или регистрации с переключением между ними
+ *
+ * @example
+ * <AuthCard onSuccess={(user) => console.log('Авторизован:', user)} />
+ */
 export default function AuthCard({ onSuccess }: AuthCardProps) {
+  // Состояние компонента
   const [mode, setMode] = useState<AuthMode>('login');
   const [serverError, setServerError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Форма входа
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     mode: 'onBlur',
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: { email: '', password: '' },
   });
 
+  // Форма регистрации
   const registerForm = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     mode: 'onBlur',
-    defaultValues: {
-      email: '',
-      password: '',
-      confirmPassword: '',
-    },
+    defaultValues: { email: '', password: '', confirmPassword: '' },
   });
 
-  const handleModeChange = (nextMode: AuthMode) => {
+  /**
+   * Переключение режима авторизации
+   */
+  const handleModeChange = useCallback((nextMode: AuthMode) => {
     setMode(nextMode);
     setServerError('');
     setSuccessMessage('');
-  };
+  }, []);
 
-  const persistAuth = (token: string, user: AuthUser) => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-    localStorage.setItem(STORAGE_TOKEN_KEY, token);
-    localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(user));
-  };
+  /**
+   * Обработчик входа
+   */
+  const handleLogin = useCallback(
+    async (values: LoginFormValues) => {
+      setServerError('');
+      setSuccessMessage('');
 
-  const handleLogin = async (values: LoginFormValues) => {
-    setServerError('');
-    setSuccessMessage('');
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
-      });
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(values),
+        });
 
-      const data: AuthResponse = await response.json();
+        const data: AuthResponse = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Не удалось войти');
+        if (!response.ok) {
+          throw new Error(data.message || 'Не удалось войти');
+        }
+
+        // Сохраняем данные авторизации
+        persistAuth(data.token, data.user);
+
+        setSuccessMessage('Добро пожаловать обратно!');
+        loginForm.reset();
+        onSuccess?.(data.user);
+      } catch (error) {
+        setServerError(error instanceof Error ? error.message : 'Произошла ошибка входа');
       }
+    },
+    [loginForm, onSuccess]
+  );
 
-      persistAuth(data.token, data.user);
-      setSuccessMessage('Добро пожаловать обратно!');
-      loginForm.reset();
-      onSuccess?.(data.user);
-    } catch (error) {
-      setServerError(error instanceof Error ? error.message : 'Произошла ошибка входа');
-    }
-  };
+  /**
+   * Обработчик регистрации
+   */
+  const handleRegister = useCallback(
+    async (values: RegisterFormValues) => {
+      setServerError('');
+      setSuccessMessage('');
 
-  const handleRegister = async (values: RegisterFormValues) => {
-    setServerError('');
-    setSuccessMessage('');
-    try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
-      });
+      try {
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(values),
+        });
 
-      const data: AuthResponse = await response.json();
+        const data: AuthResponse = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Не удалось зарегистрироваться');
+        if (!response.ok) {
+          throw new Error(data.message || 'Не удалось зарегистрироваться');
+        }
+
+        // Сохраняем данные авторизации
+        persistAuth(data.token, data.user);
+
+        setSuccessMessage('Регистрация прошла успешно!');
+        registerForm.reset();
+        loginForm.reset({ email: values.email, password: '' });
+        setMode('login');
+        onSuccess?.(data.user);
+      } catch (error) {
+        setServerError(error instanceof Error ? error.message : 'Произошла ошибка регистрации');
       }
-
-      persistAuth(data.token, data.user);
-      setSuccessMessage('Регистрация прошла успешно!');
-      registerForm.reset();
-      loginForm.reset({ email: values.email, password: '' });
-      setMode('login');
-      onSuccess?.(data.user);
-    } catch (error) {
-      setServerError(error instanceof Error ? error.message : 'Произошла ошибка регистрации');
-    }
-  };
+    },
+    [loginForm, registerForm, onSuccess]
+  );
 
   return (
     <div className={styles.card}>
+      {/* Логотип */}
       <div className={styles.logoBlock}>
         <Image src="/img/icon/logo.svg" alt="SkyFitnessPro" width={160} height={36} priority />
       </div>
 
+      {/* Форма входа */}
       {mode === 'login' ? (
         <form className={styles.form} onSubmit={loginForm.handleSubmit(handleLogin)} noValidate>
           <div className={styles.field}>
@@ -154,6 +198,7 @@ export default function AuthCard({ onSuccess }: AuthCardProps) {
               <span className={styles.errorText}>{loginForm.formState.errors.email.message}</span>
             )}
           </div>
+
           <div className={styles.field}>
             <input
               type="password"
@@ -180,6 +225,7 @@ export default function AuthCard({ onSuccess }: AuthCardProps) {
           >
             {loginForm.formState.isSubmitting ? 'Входим...' : 'Войти'}
           </button>
+
           <button
             type="button"
             className={styles.secondaryButton}
@@ -189,6 +235,7 @@ export default function AuthCard({ onSuccess }: AuthCardProps) {
           </button>
         </form>
       ) : (
+        /* Форма регистрации */
         <form
           className={styles.form}
           onSubmit={registerForm.handleSubmit(handleRegister)}
@@ -209,6 +256,7 @@ export default function AuthCard({ onSuccess }: AuthCardProps) {
               </span>
             )}
           </div>
+
           <div className={styles.field}>
             <input
               type="password"
@@ -224,6 +272,7 @@ export default function AuthCard({ onSuccess }: AuthCardProps) {
               </span>
             )}
           </div>
+
           <div className={styles.field}>
             <input
               type="password"
@@ -250,6 +299,7 @@ export default function AuthCard({ onSuccess }: AuthCardProps) {
           >
             {registerForm.formState.isSubmitting ? 'Отправляем...' : 'Зарегистрироваться'}
           </button>
+
           <button
             type="button"
             className={styles.secondaryButton}

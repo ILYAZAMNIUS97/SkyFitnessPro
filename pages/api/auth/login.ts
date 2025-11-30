@@ -1,11 +1,18 @@
+/**
+ * @fileoverview API роут для входа в аккаунт
+ * @route POST /api/auth/login
+ */
+
 import type { NextApiRequest, NextApiResponse } from 'next';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
+import { createToken } from '@/lib/auth';
+import { HTTP_STATUS, API_MESSAGES } from '@/lib/constants';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'skyfitnesspro-dev-secret';
-
+/**
+ * Тип ответа API авторизации
+ */
 interface AuthResponse {
   success: boolean;
   message: string;
@@ -17,43 +24,66 @@ interface AuthResponse {
   };
 }
 
+/**
+ * Обработчик входа в аккаунт
+ *
+ * @param req - Запрос с email и password в body
+ * @param res - Ответ с токеном и данными пользователя
+ *
+ * @example
+ * // POST /api/auth/login
+ * // Body: { email: "user@example.com", password: "123456" }
+ * // Response: { success: true, token: "...", user: { _id, email, name } }
+ */
 export default async function handler(req: NextApiRequest, res: NextApiResponse<AuthResponse>) {
+  // Проверка метода
   if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, message: 'Метод не поддерживается' });
+    return res.status(HTTP_STATUS.METHOD_NOT_ALLOWED).json({
+      success: false,
+      message: API_MESSAGES.METHOD_NOT_ALLOWED,
+    });
   }
 
   const { email, password } = req.body ?? {};
 
+  // Валидация входных данных
   if (!email || !password) {
-    return res.status(400).json({ success: false, message: 'Укажите почту и пароль' });
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      success: false,
+      message: 'Укажите почту и пароль',
+    });
   }
 
   try {
     await dbConnect();
 
+    // Нормализация email
     const normalizedEmail = String(email).toLowerCase().trim();
+
+    // Поиск пользователя
     const user = await User.findOne({ email: normalizedEmail });
 
     if (!user) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: 'Пользователь не найден. Попробуйте зарегистрироваться.',
-        });
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+        success: false,
+        message: 'Пользователь не найден. Попробуйте зарегистрироваться.',
+      });
     }
 
+    // Проверка пароля
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res
-        .status(401)
-        .json({ success: false, message: 'Пароль введен неверно, попробуйте ещё раз.' });
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+        success: false,
+        message: 'Пароль введен неверно, попробуйте ещё раз.',
+      });
     }
 
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
+    // Создание токена
+    const token = createToken(user._id.toString());
 
-    return res.status(200).json({
+    return res.status(HTTP_STATUS.OK).json({
       success: true,
       message: 'Успешный вход',
       token,
@@ -65,6 +95,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     });
   } catch (error) {
     console.error('Login error:', error);
-    return res.status(500).json({ success: false, message: 'Не удалось выполнить вход' });
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: 'Не удалось выполнить вход',
+    });
   }
 }

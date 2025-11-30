@@ -1,117 +1,129 @@
+/**
+ * @fileoverview API роут для управления прогрессом тренировок пользователя
+ * @route GET/POST /api/user/progress
+ */
+
 import type { NextApiRequest, NextApiResponse } from 'next';
-import jwt from 'jsonwebtoken';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
+import { requireAuth } from '@/lib/auth';
+import { HTTP_STATUS, API_MESSAGES } from '@/lib/constants';
+import { IUserProgress } from '@/types/course';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-
-interface JwtPayload {
-  userId: string;
-  email: string;
-}
-
-type ResponseData = {
+/**
+ * Тип ответа API прогресса
+ */
+interface ProgressResponse {
   success: boolean;
   message?: string;
-  progress?: any;
+  progress?: IUserProgress | IUserProgress[];
   error?: string;
-};
+}
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
+/**
+ * Обработчик управления прогрессом тренировок
+ *
+ * GET - Получение прогресса пользователя (опционально по курсу)
+ * POST - Сохранение прогресса тренировки
+ *
+ * @requires Authorization Bearer token
+ */
+export default async function handler(req: NextApiRequest, res: NextApiResponse<ProgressResponse>) {
   await dbConnect();
 
   // Проверка авторизации
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ success: false, error: 'Не авторизован' });
-  }
-
-  const token = authHeader.split(' ')[1];
-  let decoded: JwtPayload;
+  const auth = requireAuth(req, res);
+  if (!auth) return;
 
   try {
-    decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
-  } catch {
-    return res.status(401).json({ success: false, error: 'Недействительный токен' });
-  }
+    // Получение пользователя
+    const user = await User.findById(auth.userId);
 
-  switch (req.method) {
-    case 'GET': {
-      // Получить прогресс пользователя по курсу
-      try {
-        const { courseId } = req.query;
-
-        const user = await User.findById(decoded.userId);
-        if (!user) {
-          return res.status(404).json({ success: false, error: 'Пользователь не найден' });
-        }
-
-        let progress = user.progress || [];
-
-        // Фильтруем по курсу, если указан
-        if (courseId) {
-          progress = progress.filter((p: any) => p.courseId === courseId);
-        }
-
-        return res.status(200).json({ success: true, progress });
-      } catch (error) {
-        console.error('Error getting progress:', error);
-        return res.status(500).json({ success: false, error: 'Ошибка сервера' });
-      }
+    if (!user) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({
+        success: false,
+        error: API_MESSAGES.USER_NOT_FOUND,
+      });
     }
 
-    case 'POST': {
-      // Сохранить прогресс тренировки
-      try {
+    switch (req.method) {
+      /**
+       * GET /api/user/progress
+       * Query params: courseId (опционально) - фильтрация по курсу
+       * Возвращает массив прогресса пользователя
+       */
+      case 'GET': {
+        const { courseId } = req.query;
+        let progress: IUserProgress[] = user.progress || [];
+
+        // Фильтрация по курсу
+        if (courseId && typeof courseId === 'string') {
+          progress = progress.filter((p: IUserProgress) => p.courseId === courseId);
+        }
+
+        return res.status(HTTP_STATUS.OK).json({
+          success: true,
+          progress,
+        });
+      }
+
+      /**
+       * POST /api/user/progress
+       * Сохраняет прогресс тренировки
+       * Body: { courseId, workoutId, completedExercises }
+       */
+      case 'POST': {
         const { courseId, workoutId, completedExercises } = req.body;
 
+        // Валидация входных данных
         if (!courseId || !workoutId || !completedExercises) {
-          return res.status(400).json({
+          return res.status(HTTP_STATUS.BAD_REQUEST).json({
             success: false,
             error: 'Необходимо указать courseId, workoutId и completedExercises',
           });
         }
 
-        const user = await User.findById(decoded.userId);
-        if (!user) {
-          return res.status(404).json({ success: false, error: 'Пользователь не найден' });
-        }
-
-        // Ищем существующий прогресс для этой тренировки
-        const existingProgressIndex = user.progress.findIndex(
-          (p: any) => p.courseId === courseId && p.workoutId === workoutId
-        );
-
-        const progressEntry = {
+        // Формирование записи прогресса
+        const progressEntry: IUserProgress = {
           courseId,
           workoutId,
           completedExercises,
           completedAt: new Date(),
         };
 
-        if (existingProgressIndex !== -1) {
-          // Обновляем существующий прогресс
-          user.progress[existingProgressIndex] = progressEntry;
+        // Поиск существующего прогресса
+        const existingIndex = user.progress.findIndex(
+          (p: IUserProgress) => p.courseId === courseId && p.workoutId === workoutId
+        );
+
+        if (existingIndex !== -1) {
+          // Обновление существующего прогресса
+          user.progress[existingIndex] = progressEntry;
         } else {
-          // Добавляем новый прогресс
+          // Добавление нового прогресса
           user.progress.push(progressEntry);
         }
 
         await user.save();
 
-        return res.status(200).json({
+        return res.status(HTTP_STATUS.OK).json({
           success: true,
           message: 'Прогресс сохранён',
           progress: progressEntry,
         });
-      } catch (error) {
-        console.error('Error saving progress:', error);
-        return res.status(500).json({ success: false, error: 'Ошибка сервера' });
       }
-    }
 
-    default:
-      return res.status(405).json({ success: false, error: 'Метод не поддерживается' });
+      default:
+        return res.status(HTTP_STATUS.METHOD_NOT_ALLOWED).json({
+          success: false,
+          error: API_MESSAGES.METHOD_NOT_ALLOWED,
+        });
+    }
+  } catch (error) {
+    console.error('Error in progress API:', error);
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: API_MESSAGES.SERVER_ERROR,
+    });
   }
 }
-

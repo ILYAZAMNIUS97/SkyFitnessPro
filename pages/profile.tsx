@@ -1,38 +1,50 @@
+/**
+ * @fileoverview Страница профиля пользователя
+ * Отображает информацию о пользователе и его курсы с прогрессом
+ */
+
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 import Layout from '@/components/Layout';
 import ProfileCourseCard from '@/components/ProfileCourseCard';
+import { getStoredToken, getStoredUser, clearAuth } from '@/hooks/useAuth';
 import styles from '@/styles/Profile.module.css';
-import { STORAGE_TOKEN_KEY, STORAGE_USER_KEY } from '@/lib/storageKeys';
 import { AuthUser } from '@/types/auth';
 import { ICourse } from '@/types/course';
 
+/**
+ * Курс с прогрессом
+ */
 interface CourseWithProgress extends ICourse {
   progress: number;
 }
 
+/**
+ * Страница профиля
+ * Защищённая страница, требует авторизации
+ */
 export default function Profile() {
   const router = useRouter();
+
+  // Состояние страницы
   const [user, setUser] = useState<AuthUser | null>(null);
   const [courses, setCourses] = useState<CourseWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Загрузка данных профиля
+  /**
+   * Загрузка данных профиля
+   */
   const loadProfileData = useCallback(async () => {
-    if (typeof window === 'undefined') return;
-
-    const token = localStorage.getItem(STORAGE_TOKEN_KEY);
+    const token = getStoredToken();
 
     if (!token) {
-      console.log('No token found, redirecting to home');
       router.push('/');
       return;
     }
 
     try {
-      console.log('Fetching profile data...');
       const response = await fetch('/api/user/profile', {
         method: 'GET',
         headers: {
@@ -41,36 +53,33 @@ export default function Profile() {
         },
       });
 
-      console.log('Profile response status:', response.status);
-
       if (!response.ok) {
         if (response.status === 401) {
-          // Токен невалиден, перенаправляем на главную
-          localStorage.removeItem(STORAGE_TOKEN_KEY);
-          localStorage.removeItem(STORAGE_USER_KEY);
+          // Токен невалиден
+          clearAuth();
           router.push('/');
           return;
         }
         const errorData = await response.json().catch(() => ({}));
-        console.error('Profile API error:', errorData);
         throw new Error(errorData.message || 'Ошибка загрузки профиля');
       }
 
       const data = await response.json();
-      console.log('Profile data loaded:', data);
       setUser(data.user);
       setCourses(data.courses || []);
     } catch (err) {
-      console.error('Error loading profile:', err);
+      console.error('Ошибка загрузки профиля:', err);
       setError('Не удалось загрузить данные профиля');
     } finally {
       setLoading(false);
     }
   }, [router]);
 
+  /**
+   * Проверка авторизации и загрузка данных
+   */
   useEffect(() => {
-    // Проверяем авторизацию
-    const storedUser = localStorage.getItem(STORAGE_USER_KEY);
+    const storedUser = getStoredUser();
 
     if (!storedUser) {
       router.push('/');
@@ -80,17 +89,19 @@ export default function Profile() {
     loadProfileData();
   }, [loadProfileData, router]);
 
-  // Выход из аккаунта
-  const handleLogout = () => {
-    localStorage.removeItem(STORAGE_TOKEN_KEY);
-    localStorage.removeItem(STORAGE_USER_KEY);
+  /**
+   * Выход из аккаунта
+   */
+  const handleLogout = useCallback(() => {
+    clearAuth();
     router.push('/');
-  };
+  }, [router]);
 
-  // Удаление курса
-  const handleRemoveCourse = async (courseId: string) => {
-    const token = localStorage.getItem(STORAGE_TOKEN_KEY);
-
+  /**
+   * Удаление курса
+   */
+  const handleRemoveCourse = useCallback(async (courseId: string) => {
+    const token = getStoredToken();
     if (!token) return;
 
     try {
@@ -107,14 +118,19 @@ export default function Profile() {
         setCourses((prev) => prev.filter((c) => c._id !== courseId));
       }
     } catch (err) {
-      console.error('Error removing course:', err);
+      console.error('Ошибка удаления курса:', err);
     }
-  };
+  }, []);
 
-  // Переход к тренировке
-  const handleStartWorkout = (courseId: string) => {
-    router.push(`/workout/${courseId}`);
-  };
+  /**
+   * Переход к тренировке
+   */
+  const handleStartWorkout = useCallback(
+    (courseId: string) => {
+      router.push(`/workout/${courseId}`);
+    },
+    [router]
+  );
 
   // Состояние загрузки
   if (loading) {

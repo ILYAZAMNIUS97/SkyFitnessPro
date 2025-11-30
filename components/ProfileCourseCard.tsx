@@ -1,40 +1,75 @@
+/**
+ * @fileoverview Карточка курса на странице профиля
+ * Отображает курс с прогрессом и кнопками управления
+ */
+
+import { useCallback } from 'react';
+import Link from 'next/link';
+import { getProgressButtonText } from '@/lib/utils';
 import { ICourse } from '@/types/course';
 import styles from '@/styles/ProfileCourseCard.module.css';
-import Link from 'next/link';
 
+/**
+ * Props компонента ProfileCourseCard
+ */
 interface ProfileCourseCardProps {
+  /** Данные курса */
   course: ICourse;
-  progress: number; // 0-100
+  /** Прогресс выполнения (0-100) */
+  progress: number;
+  /** Callback удаления курса */
   onRemove?: (courseId: string) => void;
+  /** Callback начала тренировки */
   onStartWorkout?: (courseId: string) => void;
 }
 
+/**
+ * Карточка курса в профиле пользователя
+ * Показывает прогресс и позволяет управлять курсом
+ *
+ * @example
+ * <ProfileCourseCard
+ *   course={course}
+ *   progress={75}
+ *   onRemove={handleRemove}
+ *   onStartWorkout={handleStart}
+ * />
+ */
 const ProfileCourseCard: React.FC<ProfileCourseCardProps> = ({
   course,
   progress,
   onRemove,
   onStartWorkout,
 }) => {
-  const handleRemoveClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onRemove?.(course._id);
-  };
+  /**
+   * Обработчик удаления курса
+   */
+  const handleRemoveClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onRemove?.(course._id);
+    },
+    [course._id, onRemove]
+  );
 
-  const handleButtonClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    onStartWorkout?.(course._id);
-  };
+  /**
+   * Обработчик нажатия на кнопку действия
+   */
+  const handleButtonClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      onStartWorkout?.(course._id);
+    },
+    [course._id, onStartWorkout]
+  );
 
-  // Определяем текст кнопки в зависимости от прогресса
-  const getButtonText = () => {
-    if (progress === 0) return 'Начать тренировки';
-    if (progress >= 100) return 'Начать заново';
-    return 'Продолжить';
-  };
+  // Текст кнопки зависит от прогресса
+  const buttonText = getProgressButtonText(progress);
 
   return (
     <div className={styles.card}>
+      {/* Изображение курса */}
       <div
         className={styles.imageWrapper}
         style={{ backgroundColor: course.backgroundColor || '#FFC700' }}
@@ -42,6 +77,8 @@ const ProfileCourseCard: React.FC<ProfileCourseCardProps> = ({
         <Link href={`/course/${course._id}`}>
           <img src={course.image} alt={course.nameRU} className={styles.image} />
         </Link>
+
+        {/* Кнопка удаления */}
         <button
           className={styles.removeButton}
           onClick={handleRemoveClick}
@@ -59,10 +96,14 @@ const ProfileCourseCard: React.FC<ProfileCourseCardProps> = ({
           </svg>
         </button>
       </div>
+
+      {/* Информация о курсе */}
       <div className={styles.content}>
         <Link href={`/course/${course._id}`}>
           <h3 className={styles.title}>{course.nameRU}</h3>
         </Link>
+
+        {/* Метаданные */}
         <div className={styles.meta}>
           <div className={styles.metaRow}>
             <div className={styles.metaItem}>
@@ -81,14 +122,18 @@ const ProfileCourseCard: React.FC<ProfileCourseCardProps> = ({
             <span>Сложность</span>
           </div>
         </div>
+
+        {/* Прогресс */}
         <div className={styles.progressSection}>
           <div className={styles.progressLabel}>Прогресс {progress}%</div>
           <div className={styles.progressBar}>
             <div className={styles.progressFill} style={{ width: `${progress}%` }} />
           </div>
         </div>
+
+        {/* Кнопка действия */}
         <button className={styles.actionButton} onClick={handleButtonClick}>
-          {getButtonText()}
+          {buttonText}
         </button>
       </div>
     </div>
@@ -96,4 +141,3 @@ const ProfileCourseCard: React.FC<ProfileCourseCardProps> = ({
 };
 
 export default ProfileCourseCard;
-
