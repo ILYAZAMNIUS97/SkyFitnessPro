@@ -339,7 +339,6 @@
   /* Блок "Упражнения тренировки" */
   .exercisesSection {
     width: 343px;
-    min-height: 818px;
     border-radius: 30px;
     padding: 30px;
     gap: 24px;
