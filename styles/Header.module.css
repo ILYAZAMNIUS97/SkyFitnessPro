@@ -350,6 +350,15 @@
 
 /* Планшетная версия */
 @media (min-width: 769px) and (max-width: 1024px) {
+  .header {
+    top: 20px;
+  }
+
+  .header::before {
+    top: -20px;
+    height: 20px;
+  }
+
   .container {
     padding: 0 40px;
   }
@@ -381,7 +390,13 @@
 
 @media (max-width: 768px) {
   .header {
+    top: 20px;
     height: 96px;
+  }
+
+  .header::before {
+    top: -20px;
+    height: 20px;
   }
 
   .container {
@@ -440,7 +455,13 @@
 
 @media (max-width: 480px) {
   .header {
+    top: 16px;
     height: 56px;
+  }
+
+  .header::before {
+    top: -16px;
+    height: 16px;
   }
 
   .container {
