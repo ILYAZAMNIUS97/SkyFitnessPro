@@ -384,11 +384,9 @@
     margin-bottom: 20px;
   }
 
-  /* Карточки упражнений в 2 ряда для экранов 768px */
   .exercisesGrid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px 16px;
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 
   .exerciseName {

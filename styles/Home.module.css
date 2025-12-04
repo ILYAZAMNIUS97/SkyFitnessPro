@@ -226,9 +226,8 @@
     width: 100%;
   }
 
-  /* Карточки курсов в 2 ряда на 768px */
   .coursesGrid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: 20px;
     width: 100%;
     max-width: 100%;

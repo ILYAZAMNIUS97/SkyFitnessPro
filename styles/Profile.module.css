@@ -442,10 +442,9 @@
     text-align: left;
   }
 
-  /* Карточки курсов в 2 ряда на 768px */
   .coursesGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    grid-template-columns: 1fr;
+    gap: 24px;
     justify-items: center;
     width: 100%;
   }
