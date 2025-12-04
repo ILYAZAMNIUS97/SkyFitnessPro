@@ -7,6 +7,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { getStoredToken, getStoredUser } from '@/hooks/useAuth';
+import { useUserCourses } from '@/hooks/useUserCourses';
 import AuthModal from './AuthModal';
 import SuccessModal from './SuccessModal';
 import { ICourse } from '@/types/course';
@@ -29,34 +30,12 @@ interface CourseCardProps {
  */
 const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
   const router = useRouter();
+  const { hasCourse, addCourse, isLoading: isLoadingCourses } = useUserCourses();
 
   // Состояние компонента
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [hasCourse, setHasCourse] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-
-  /**
-   * Проверяет, добавлен ли курс у пользователя
-   */
-  const checkUserCourse = useCallback(async () => {
-    const token = getStoredToken();
-    if (!token) return;
-
-    try {
-      const response = await fetch('/api/user/courses', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setHasCourse(data.courses?.includes(course._id) ?? false);
-      }
-    } catch (error) {
-      console.error('Ошибка проверки курсов:', error);
-    }
-  }, [course._id]);
 
   // Проверка авторизации при монтировании
   useEffect(() => {
@@ -65,9 +44,22 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
 
     if (token && user) {
       setIsAuthenticated(true);
-      checkUserCourse();
     }
-  }, [checkUserCourse]);
+  }, []);
+
+  // Слушаем изменения авторизации
+  useEffect(() => {
+    const handleAuthChange = () => {
+      const token = getStoredToken();
+      const user = getStoredUser();
+      setIsAuthenticated(!!(token && user));
+    };
+
+    window.addEventListener('authStateChanged', handleAuthChange);
+    return () => {
+      window.removeEventListener('authStateChanged', handleAuthChange);
+    };
+  }, []);
 
   /**
    * Обработчик добавления курса
@@ -84,39 +76,21 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
       }
 
       // Если курс уже добавлен - переходим в профиль
-      if (hasCourse) {
+      const courseAdded = hasCourse(course._id);
+      if (courseAdded) {
         router.push('/profile');
         return;
       }
 
-      // Добавляем курс
-      setIsLoading(true);
-      try {
-        const token = getStoredToken();
-        const response = await fetch('/api/user/courses', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ courseId: course._id }),
-        });
-
-        if (response.ok) {
-          setHasCourse(true);
-          setShowSuccessModal(true);
-        } else {
-          const data = await response.json();
-          alert(data.message || 'Ошибка при добавлении курса');
-        }
-      } catch (error) {
-        console.error('Ошибка добавления курса:', error);
-        alert('Произошла ошибка при добавлении курса');
-      } finally {
-        setIsLoading(false);
+      // Добавляем курс через хук
+      const success = await addCourse(course._id);
+      if (success) {
+        setShowSuccessModal(true);
+      } else {
+        alert('Ошибка при добавлении курса');
       }
     },
-    [isAuthenticated, hasCourse, course._id, router]
+    [isAuthenticated, hasCourse, course._id, router, addCourse]
   );
 
   /**
@@ -125,8 +99,8 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
   const handleAuthSuccess = useCallback(() => {
     setIsAuthModalOpen(false);
     setIsAuthenticated(true);
-    checkUserCourse();
-  }, [checkUserCourse]);
+    // После авторизации курсы автоматически загрузятся через Provider
+  }, []);
 
   return (
     <>
@@ -142,12 +116,12 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
 
           {/* Кнопка добавления */}
           <button
-            className={`${styles.addButton} ${hasCourse ? styles.addButtonAdded : ''}`}
+            className={`${styles.addButton} ${hasCourse(course._id) ? styles.addButtonAdded : ''}`}
             onClick={handleAddClick}
-            aria-label={hasCourse ? 'Курс добавлен' : 'Добавить курс'}
-            disabled={isLoading}
+            aria-label={hasCourse(course._id) ? 'Курс добавлен' : 'Добавить курс'}
+            disabled={isLoadingCourses}
           >
-            {hasCourse ? (
+            {hasCourse(course._id) ? (
               <svg
                 width="24"
                 height="24"

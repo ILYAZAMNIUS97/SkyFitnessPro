@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Layout from '@/components/Layout';
 import ProfileCourseCard from '@/components/ProfileCourseCard';
 import { getStoredToken, getStoredUser, clearAuth } from '@/hooks/useAuth';
+import { useUserCourses } from '@/hooks/useUserCourses';
 import styles from '@/styles/Profile.module.css';
 import { AuthUser } from '@/types/auth';
 import { ICourse } from '@/types/course';
@@ -26,6 +27,7 @@ interface CourseWithProgress extends ICourse {
  */
 export default function Profile() {
   const router = useRouter();
+  const { removeCourse } = useUserCourses();
 
   // Состояние страницы
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -100,27 +102,16 @@ export default function Profile() {
   /**
    * Удаление курса
    */
-  const handleRemoveCourse = useCallback(async (courseId: string) => {
-    const token = getStoredToken();
-    if (!token) return;
-
-    try {
-      const response = await fetch('/api/user/courses', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ courseId }),
-      });
-
-      if (response.ok) {
+  const handleRemoveCourse = useCallback(
+    async (courseId: string) => {
+      const success = await removeCourse(courseId);
+      if (success) {
+        // Обновляем локальное состояние после успешного удаления
         setCourses((prev) => prev.filter((c) => c._id !== courseId));
       }
-    } catch (err) {
-      console.error('Ошибка удаления курса:', err);
-    }
-  }, []);
+    },
+    [removeCourse]
+  );
 
   /**
    * Переход к тренировке

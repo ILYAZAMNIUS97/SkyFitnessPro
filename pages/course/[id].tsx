@@ -11,6 +11,7 @@ import Layout from '@/components/Layout';
 import AuthModal from '@/components/AuthModal';
 import SuccessModal from '@/components/SuccessModal';
 import { getStoredToken, getStoredUser } from '@/hooks/useAuth';
+import { useUserCourses } from '@/hooks/useUserCourses';
 import { serializeDocument } from '@/lib/utils';
 import { ICourse } from '@/types/course';
 import dbConnect from '@/lib/mongodb';
@@ -31,34 +32,12 @@ interface CoursePageProps {
  */
 export default function CoursePage({ course }: CoursePageProps) {
   const router = useRouter();
+  const { hasCourse, addCourse, isLoading: isLoadingCourses } = useUserCourses();
 
   // Состояние компонента
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [hasCourse, setHasCourse] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-
-  /**
-   * Проверяет, добавлен ли курс у пользователя
-   */
-  const checkUserCourse = useCallback(async () => {
-    const token = getStoredToken();
-    if (!token || !course) return;
-
-    try {
-      const response = await fetch('/api/user/courses', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setHasCourse(data.courses?.includes(course._id) ?? false);
-      }
-    } catch (error) {
-      console.error('Ошибка проверки курсов:', error);
-    }
-  }, [course]);
 
   /**
    * Проверка авторизации при монтировании
@@ -69,50 +48,46 @@ export default function CoursePage({ course }: CoursePageProps) {
 
     if (token && user) {
       setIsAuthenticated(true);
-      checkUserCourse();
     }
-  }, [checkUserCourse]);
+  }, []);
+
+  // Слушаем изменения авторизации
+  useEffect(() => {
+    const handleAuthChange = () => {
+      const token = getStoredToken();
+      const user = getStoredUser();
+      setIsAuthenticated(!!(token && user));
+    };
+
+    window.addEventListener('authStateChanged', handleAuthChange);
+    return () => {
+      window.removeEventListener('authStateChanged', handleAuthChange);
+    };
+  }, []);
 
   /**
    * Обработчик добавления курса
    */
   const handleAddCourse = useCallback(async () => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !course) {
       setIsAuthModalOpen(true);
       return;
     }
 
-    if (hasCourse) {
+    const courseAdded = hasCourse(course._id);
+    if (courseAdded) {
       router.push('/profile');
       return;
     }
 
-    setIsLoading(true);
-    try {
-      const token = getStoredToken();
-      const response = await fetch('/api/user/courses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ courseId: course?._id }),
-      });
-
-      if (response.ok) {
-        setHasCourse(true);
-        setShowSuccessModal(true);
-      } else {
-        const data = await response.json();
-        alert(data.message || 'Ошибка при добавлении курса');
-      }
-    } catch (error) {
-      console.error('Ошибка добавления курса:', error);
-      alert('Произошла ошибка при добавлении курса');
-    } finally {
-      setIsLoading(false);
+    // Добавляем курс через хук
+    const success = await addCourse(course._id);
+    if (success) {
+      setShowSuccessModal(true);
+    } else {
+      alert('Ошибка при добавлении курса');
     }
-  }, [isAuthenticated, hasCourse, course, router]);
+  }, [isAuthenticated, hasCourse, course, router, addCourse]);
 
   /**
    * Обработчик успешной авторизации
@@ -120,14 +95,15 @@ export default function CoursePage({ course }: CoursePageProps) {
   const handleAuthSuccess = useCallback(() => {
     setIsAuthModalOpen(false);
     setIsAuthenticated(true);
-    checkUserCourse();
-  }, [checkUserCourse]);
+    // После авторизации курсы автоматически загрузятся через Provider
+  }, []);
 
   /**
    * Получение текста кнопки
    */
   const getButtonText = (): string => {
-    if (hasCourse) return 'Перейти к тренировкам';
+    if (!course) return 'Курс не найден';
+    if (hasCourse(course._id)) return 'Перейти к тренировкам';
     if (!isAuthenticated) return 'Войдите, чтобы добавить курс';
     return 'Добавить курс';
   };
@@ -238,8 +214,12 @@ export default function CoursePage({ course }: CoursePageProps) {
                   ))}
               </ul>
             )}
-            <button className={styles.ctaButton} onClick={handleAddCourse} disabled={isLoading}>
-              {isLoading ? 'Загрузка...' : getButtonText()}
+            <button
+              className={styles.ctaButton}
+              onClick={handleAddCourse}
+              disabled={isLoadingCourses}
+            >
+              {isLoadingCourses ? 'Загрузка...' : getButtonText()}
             </button>
           </div>
           <div className={styles.ctaImage}>

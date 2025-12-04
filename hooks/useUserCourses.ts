@@ -1,11 +1,10 @@
 /**
  * @fileoverview Хук для работы с курсами пользователя
- * Предоставляет методы для проверки, добавления и удаления курсов
+ * Использует глобальное состояние из UserCoursesContext
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/router';
-import { getStoredToken } from './useAuth';
+import { useContext } from 'react';
+import { UserCoursesContext } from './UserCoursesProvider';
 
 /**
  * Результат хука useUserCourses
@@ -27,15 +26,14 @@ interface UseUserCoursesReturn {
 
 /**
  * Хук для управления курсами пользователя
- * Автоматически загружает список курсов при авторизации
+ * Использует глобальное состояние из UserCoursesContext
+ * Данные загружаются один раз на уровне приложения через UserCoursesProvider
  *
- * @param isAuthenticated - Авторизован ли пользователь
  * @returns Объект с данными и методами управления курсами
  *
  * @example
  * function CourseCard({ course }) {
- *   const { isAuthenticated } = useAuth();
- *   const { hasCourse, addCourse, isLoading } = useUserCourses(isAuthenticated);
+ *   const { hasCourse, addCourse, isLoading } = useUserCourses();
  *
  *   const handleAdd = async () => {
  *     const success = await addCourse(course._id);
@@ -49,132 +47,23 @@ interface UseUserCoursesReturn {
  *   );
  * }
  */
-export function useUserCourses(isAuthenticated: boolean): UseUserCoursesReturn {
-  const router = useRouter();
-  const [courseIds, setCourseIds] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+export function useUserCourses(): UseUserCoursesReturn {
+  const context = useContext(UserCoursesContext);
 
-  /**
-   * Загружает список курсов пользователя
-   */
-  const fetchCourses = useCallback(async () => {
-    const token = getStoredToken();
-    if (!token) return;
+  if (!context) {
+    // Возвращаем значения по умолчанию, если контекст не доступен
+    // Это может произойти, если хук используется вне UserCoursesProvider
+    return {
+      courseIds: [],
+      hasCourse: () => false,
+      addCourse: async () => false,
+      removeCourse: async () => false,
+      isLoading: false,
+      refresh: async () => {},
+    };
+  }
 
-    try {
-      setIsLoading(true);
-      const response = await fetch('/api/user/courses', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setCourseIds(data.courses || []);
-      }
-    } catch (error) {
-      console.error('Ошибка загрузки курсов:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchCourses();
-    } else {
-      setCourseIds([]);
-    }
-  }, [isAuthenticated, fetchCourses]);
-
-  /**
-   * Проверяет, добавлен ли курс
-   */
-  const hasCourse = useCallback(
-    (courseId: string): boolean => {
-      return courseIds.includes(courseId);
-    },
-    [courseIds]
-  );
-
-  /**
-   * Добавляет курс пользователю
-   * @returns true если успешно, false если ошибка
-   */
-  const addCourse = useCallback(async (courseId: string): Promise<boolean> => {
-    const token = getStoredToken();
-    if (!token) return false;
-
-    try {
-      setIsLoading(true);
-      const response = await fetch('/api/user/courses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ courseId }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setCourseIds(data.courses || []);
-        return true;
-      } else {
-        const data = await response.json();
-        console.error('Ошибка добавления курса:', data.message);
-        return false;
-      }
-    } catch (error) {
-      console.error('Ошибка добавления курса:', error);
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  /**
-   * Удаляет курс у пользователя
-   * @returns true если успешно, false если ошибка
-   */
-  const removeCourse = useCallback(async (courseId: string): Promise<boolean> => {
-    const token = getStoredToken();
-    if (!token) return false;
-
-    try {
-      setIsLoading(true);
-      const response = await fetch('/api/user/courses', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ courseId }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setCourseIds(data.courses || []);
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error('Ошибка удаления курса:', error);
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  return {
-    courseIds,
-    hasCourse,
-    addCourse,
-    removeCourse,
-    isLoading,
-    refresh: fetchCourses,
-  };
+  return context;
 }
 
 export default useUserCourses;
