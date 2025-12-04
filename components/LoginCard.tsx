@@ -100,6 +100,8 @@ export default function LoginCard({
         // Сохраняем данные авторизации
         if (data.token && data.user) {
           persistAuth(data.token, data.user);
+          // Уведомляем Layout об изменении состояния авторизации
+          window.dispatchEvent(new Event('authStateChanged'));
         }
 
         setSuccessMessage('Добро пожаловать обратно!');

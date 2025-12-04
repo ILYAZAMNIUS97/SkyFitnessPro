@@ -106,6 +106,8 @@ export default function RegisterCard({
         // Сохраняем данные авторизации
         if (data.token && data.user) {
           persistAuth(data.token, data.user);
+          // Уведомляем Layout об изменении состояния авторизации
+          window.dispatchEvent(new Event('authStateChanged'));
         }
 
         setSuccessMessage('Регистрация прошла успешно!');

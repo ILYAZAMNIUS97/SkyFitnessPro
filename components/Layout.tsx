@@ -64,6 +64,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const handleLogout = useCallback(() => {
     setUser(null);
     clearAuth();
+    // Уведомляем другие компоненты об изменении состояния авторизации
+    window.dispatchEvent(new Event('authStateChanged'));
   }, []);
 
   /**
@@ -74,6 +76,24 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     if (storedUser) {
       setUser(storedUser);
     }
+  }, []);
+
+  /**
+   * Обновление состояния пользователя при изменении авторизации
+   * Слушает кастомное событие 'authStateChanged' для синхронизации состояния
+   */
+  useEffect(() => {
+    const handleAuthStateChange = () => {
+      const storedUser = getStoredUser();
+      setUser(storedUser);
+    };
+
+    // Слушаем кастомное событие изменения авторизации
+    window.addEventListener('authStateChanged', handleAuthStateChange);
+
+    return () => {
+      window.removeEventListener('authStateChanged', handleAuthStateChange);
+    };
   }, []);
 
   return (
