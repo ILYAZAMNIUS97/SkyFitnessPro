@@ -50,3 +50,4 @@ global.localStorage = localStorageMock;
 
 // Моки для fetch
 global.fetch = jest.fn();
+

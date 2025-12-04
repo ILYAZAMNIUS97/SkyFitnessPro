@@ -1,10 +1,10 @@
 /**
- * @fileoverview Тесты для компонента AuthCard (контейнер)
+ * @fileoverview Тесты для компонента LoginCard
  */
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import AuthCard from '../AuthCard';
+import LoginCard from '../LoginCard';
 
 // Мок для next/image
 jest.mock('next/image', () => ({
@@ -23,22 +23,44 @@ jest.mock('@/hooks/useAuth', () => ({
 // Мок для fetch
 global.fetch = jest.fn();
 
-describe('AuthCard', () => {
+describe('LoginCard', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('Форма входа', () => {
-    it('рендерит форму входа по умолчанию', () => {
-      render(<AuthCard />);
+  describe('Рендеринг', () => {
+    it('рендерит форму входа с логотипом', () => {
+      render(<LoginCard />);
 
+      expect(screen.getByAltText('SkyFitnessPro')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Эл. почта')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Пароль')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Войти' })).toBeInTheDocument();
     });
 
+    it('рендерит форму без логотипа при showLogo=false', () => {
+      render(<LoginCard showLogo={false} />);
+
+      expect(screen.queryByAltText('SkyFitnessPro')).not.toBeInTheDocument();
+    });
+
+    it('показывает кнопку переключения на регистрацию при наличии callback', () => {
+      const mockSwitch = jest.fn();
+      render(<LoginCard onSwitchToRegister={mockSwitch} />);
+
+      expect(screen.getByRole('button', { name: 'Зарегистрироваться' })).toBeInTheDocument();
+    });
+
+    it('не показывает кнопку переключения без callback', () => {
+      render(<LoginCard />);
+
+      expect(screen.queryByRole('button', { name: 'Зарегистрироваться' })).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Валидация', () => {
     it('показывает ошибку валидации для некорректного email', async () => {
-      render(<AuthCard />);
+      render(<LoginCard />);
 
       const emailInput = screen.getByPlaceholderText('Эл. почта');
       await userEvent.type(emailInput, 'invalid-email');
@@ -50,7 +72,7 @@ describe('AuthCard', () => {
     });
 
     it('показывает ошибку валидации для короткого пароля', async () => {
-      render(<AuthCard />);
+      render(<LoginCard />);
 
       const passwordInput = screen.getByPlaceholderText('Пароль');
       await userEvent.type(passwordInput, '123');
@@ -60,53 +82,16 @@ describe('AuthCard', () => {
         expect(screen.getByText('Минимум 6 символов')).toBeInTheDocument();
       });
     });
-  });
 
-  describe('Переключение режимов', () => {
-    it('переключает на форму регистрации', async () => {
-      render(<AuthCard />);
+    it('не показывает ошибку для корректного email', async () => {
+      render(<LoginCard />);
 
-      const registerButton = screen.getByRole('button', { name: 'Зарегистрироваться' });
-      await userEvent.click(registerButton);
-
-      expect(screen.getByPlaceholderText('Повторите пароль')).toBeInTheDocument();
-    });
-
-    it('переключает обратно на форму входа', async () => {
-      render(<AuthCard />);
-
-      // Переключаемся на регистрацию
-      await userEvent.click(screen.getByRole('button', { name: 'Зарегистрироваться' }));
-
-      // Переключаемся обратно на вход
-      await userEvent.click(screen.getByRole('button', { name: 'Войти' }));
-
-      expect(screen.queryByPlaceholderText('Повторите пароль')).not.toBeInTheDocument();
-    });
-
-    it('поддерживает initialMode="register"', () => {
-      render(<AuthCard initialMode="register" />);
-
-      expect(screen.getByPlaceholderText('Повторите пароль')).toBeInTheDocument();
-    });
-  });
-
-  describe('Форма регистрации', () => {
-    it('показывает ошибку при несовпадении паролей', async () => {
-      render(<AuthCard />);
-
-      // Переключаемся на регистрацию
-      await userEvent.click(screen.getByRole('button', { name: 'Зарегистрироваться' }));
-
-      const passwordInput = screen.getByPlaceholderText('Пароль');
-      const confirmInput = screen.getByPlaceholderText('Повторите пароль');
-
-      await userEvent.type(passwordInput, 'password123');
-      await userEvent.type(confirmInput, 'different123');
-      fireEvent.blur(confirmInput);
+      const emailInput = screen.getByPlaceholderText('Эл. почта');
+      await userEvent.type(emailInput, 'test@test.com');
+      fireEvent.blur(emailInput);
 
       await waitFor(() => {
-        expect(screen.getByText('Пароли должны совпадать')).toBeInTheDocument();
+        expect(screen.queryByText('Введите корректный e-mail')).not.toBeInTheDocument();
       });
     });
   });
@@ -125,7 +110,7 @@ describe('AuthCard', () => {
         json: () => Promise.resolve(mockResponse),
       });
 
-      render(<AuthCard onSuccess={mockOnSuccess} />);
+      render(<LoginCard onSuccess={mockOnSuccess} />);
 
       await userEvent.type(screen.getByPlaceholderText('Эл. почта'), 'test@test.com');
       await userEvent.type(screen.getByPlaceholderText('Пароль'), 'password123');
@@ -143,7 +128,7 @@ describe('AuthCard', () => {
         json: () => Promise.resolve({ message: 'Неверный пароль' }),
       });
 
-      render(<AuthCard />);
+      render(<LoginCard />);
 
       await userEvent.type(screen.getByPlaceholderText('Эл. почта'), 'test@test.com');
       await userEvent.type(screen.getByPlaceholderText('Пароль'), 'password123');
@@ -153,6 +138,41 @@ describe('AuthCard', () => {
       await waitFor(() => {
         expect(screen.getByText('Неверный пароль')).toBeInTheDocument();
       });
+    });
+
+    it('показывает сообщение об успехе после входа', async () => {
+      const mockResponse = {
+        success: true,
+        token: 'test-token',
+        user: { _id: '1', email: 'test@test.com', name: 'Test' },
+      };
+
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
+
+      render(<LoginCard />);
+
+      await userEvent.type(screen.getByPlaceholderText('Эл. почта'), 'test@test.com');
+      await userEvent.type(screen.getByPlaceholderText('Пароль'), 'password123');
+
+      await userEvent.click(screen.getByRole('button', { name: 'Войти' }));
+
+      await waitFor(() => {
+        expect(screen.getByText('Добро пожаловать обратно!')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Переключение режимов', () => {
+    it('вызывает callback при нажатии на кнопку регистрации', async () => {
+      const mockSwitch = jest.fn();
+      render(<LoginCard onSwitchToRegister={mockSwitch} />);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Зарегистрироваться' }));
+
+      expect(mockSwitch).toHaveBeenCalled();
     });
   });
 });
