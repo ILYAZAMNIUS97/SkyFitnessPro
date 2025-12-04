@@ -63,7 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
       /**
        * POST /api/user/courses
-       * Добавляет курс пользователю
+       * Добавляет курс пользователю и обнуляет прогресс по этому курсу
        * Body: { courseId: string }
        */
       case 'POST': {
@@ -76,18 +76,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           });
         }
 
+        const courseIdString = String(courseId);
+
         // Проверка на дубликат
         const currentCourses = getCourseIds();
-        if (currentCourses.includes(courseId)) {
+        if (currentCourses.includes(courseIdString)) {
           return res.status(HTTP_STATUS.BAD_REQUEST).json({
             success: false,
             message: API_MESSAGES.COURSE_ALREADY_ADDED,
           });
         }
 
+        // Удаление всего прогресса по этому курсу (для сброса при повторном добавлении)
+        if (user.progress && user.progress.length > 0) {
+          user.progress = user.progress.filter(
+            (p: { courseId: string }) => String(p.courseId) !== courseIdString
+          );
+        }
+
         // Добавление курса
         user.courses = user.courses || [];
-        user.courses.push(courseId);
+        user.courses.push(courseIdString);
         await user.save();
 
         return res.status(HTTP_STATUS.OK).json({
@@ -99,7 +108,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
       /**
        * DELETE /api/user/courses
-       * Удаляет курс у пользователя
+       * Удаляет курс у пользователя и обнуляет прогресс по этому курсу
        * Body: { courseId: string }
        */
       case 'DELETE': {
@@ -112,8 +121,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           });
         }
 
+        const courseIdString = String(courseId);
+
         // Удаление курса
-        user.courses = (user.courses || []).filter((id: unknown) => String(id) !== courseId);
+        user.courses = (user.courses || []).filter((id: unknown) => String(id) !== courseIdString);
+
+        // Удаление всего прогресса по этому курсу
+        if (user.progress && user.progress.length > 0) {
+          user.progress = user.progress.filter(
+            (p: { courseId: string }) => String(p.courseId) !== courseIdString
+          );
+        }
+
         await user.save();
 
         return res.status(HTTP_STATUS.OK).json({
