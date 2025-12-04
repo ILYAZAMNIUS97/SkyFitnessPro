@@ -86,6 +86,7 @@
   gap: 40px;
   width: 1160px;
   max-width: 100%;
+  justify-content: center;
 }
 
 .empty {
@@ -101,6 +102,57 @@
   color: var(--text-secondary);
 }
 
+/* Планшетная версия (769px - 1024px) */
+/* Стилистика мобильной версии с 2 колонками карточек */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    padding: 0 40px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .hero {
+    width: 100%;
+    max-width: 100%;
+    padding: 40px 0;
+    margin-bottom: 28px;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .title {
+    font-family: 'Roboto', sans-serif;
+    font-size: 42px;
+    font-weight: 500;
+    line-height: 110%;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .heroCallout {
+    display: none;
+  }
+
+  .courses {
+    margin-top: 0;
+    width: 100%;
+  }
+
+  .coursesTitle {
+    font-size: 32px;
+    margin-bottom: 32px;
+    width: 100%;
+  }
+
+  /* Карточки курсов в 2 ряда для планшетов */
+  .coursesGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
 @media (max-width: 1200px) {
   .container {
     padding: 0 60px;
@@ -111,9 +163,10 @@
   }
 
   .coursesGrid {
-    grid-template-columns: repeat(2, 360px);
+    grid-template-columns: repeat(2, 1fr);
     gap: 30px;
-    width: auto;
+    width: 100%;
+    max-width: 100%;
   }
 }
 
@@ -136,24 +189,25 @@
 @media (max-width: 768px) {
   .container {
     padding: 0 16px;
+    width: 100%;
+    max-width: 100%;
   }
 
   .hero {
-    padding: 19px 0 20px;
-    margin-bottom: 30px;
+    padding: 24px 0 20px;
+    margin-bottom: 28px;
     flex-direction: column;
     gap: 20px;
     width: 100%;
+    max-width: 100%;
   }
 
   .title {
     font-family: 'Roboto', sans-serif;
     font-size: 32px;
     font-weight: 500;
-    font-style: normal;
     line-height: 110%;
-    letter-spacing: 0px;
-    width: 327px;
+    width: 100%;
     max-width: 100%;
   }
 
@@ -163,47 +217,76 @@
 
   .courses {
     margin-top: 0;
+    width: 100%;
   }
 
   .coursesTitle {
-    font-size: 24px;
+    font-size: 26px;
     margin-bottom: 24px;
+    width: 100%;
   }
 
+  /* Карточки курсов в 2 ряда на 768px */
   .coursesGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     width: 100%;
+    max-width: 100%;
   }
 }
 
 @media (max-width: 480px) {
   .container {
-    padding: 0 12px;
+    padding: 0 16px;
+    width: 100%;
+    max-width: 100%;
   }
 
   .hero {
     padding: 20px 0 16px;
     margin-bottom: 24px;
     gap: 16px;
+    width: 100%;
   }
 
   .title {
     font-size: 28px;
+    width: 100%;
   }
 
   .coursesTitle {
-    font-size: 20px;
+    font-size: 22px;
     margin-bottom: 20px;
+    width: 100%;
   }
 
   .coursesGrid {
-    gap: 16px;
+    gap: 18px;
+    width: 100%;
+    max-width: 100%;
   }
 }
 
 @media (max-width: 360px) {
+  .container {
+    padding: 0 12px;
+  }
+
+  .hero {
+    padding: 16px 0 14px;
+    margin-bottom: 20px;
+  }
+
   .title {
     font-size: 24px;
+  }
+
+  .coursesTitle {
+    font-size: 20px;
+    margin-bottom: 18px;
+  }
+
+  .coursesGrid {
+    gap: 16px;
   }
 }

@@ -120,88 +120,179 @@
   cursor: not-allowed;
 }
 
-/* Мобильная версия */
-@media (max-width: 480px) {
+/* Планшетная версия */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .overlay {
+    padding: 40px;
+  }
+
+  .modal {
+    max-width: 500px;
+    max-height: 85vh;
+    border-radius: 30px;
+  }
+
+  .header {
+    padding: 40px 40px 28px;
+  }
+
+  .title {
+    font-size: 36px;
+  }
+
+  .form {
+    padding: 0 40px;
+    max-height: 450px;
+  }
+
+  .inputGroup {
+    margin-bottom: 24px;
+  }
+
+  .label {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .input {
+    height: 56px;
+    padding: 16px 20px;
+    font-size: 19px;
+    border-radius: 14px;
+  }
+
+  .footer {
+    padding: 28px 40px 40px;
+  }
+
+  .submitButton {
+    height: 56px;
+    font-size: 20px;
+  }
+}
+
+/* Средние мобильные экраны */
+@media (max-width: 768px) {
   .overlay {
     padding: 20px;
   }
 
   .modal {
-    width: 343px;
-    height: 572px;
-    max-width: 343px;
-    max-height: 572px;
-    border-radius: 30px;
-    padding: 40px;
-    gap: 34px;
+    width: 100%;
+    max-width: 400px;
+    max-height: 85vh;
+    border-radius: 28px;
+  }
+
+  .header {
+    padding: 32px 28px 20px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .form {
+    padding: 0 28px;
+    max-height: 380px;
+  }
+
+  .inputGroup {
+    margin-bottom: 18px;
+  }
+
+  .label {
+    font-size: 17px;
+    margin-bottom: 8px;
+  }
+
+  .input {
+    height: 50px;
+    padding: 14px 16px;
+    font-size: 17px;
+    border-radius: 10px;
+  }
+
+  .footer {
+    padding: 20px 28px 28px;
+  }
+
+  .submitButton {
+    height: 50px;
+    font-size: 17px;
+  }
+}
+
+/* Мобильная версия */
+@media (max-width: 480px) {
+  .overlay {
+    padding: 16px;
+    align-items: center;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 28px;
+    padding: 0;
     display: flex;
     flex-direction: column;
     box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
   }
 
   .header {
-    padding: 0;
+    padding: 32px 24px 16px;
+    flex-shrink: 0;
   }
 
   .title {
     font-family: 'Roboto', sans-serif;
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 400;
-    font-style: normal;
     line-height: 110%;
-    letter-spacing: 0%;
     color: #000000;
     margin: 0;
-    font-variant-numeric: lining-nums;
-    font-variant-numeric-spacing: proportional-nums;
   }
 
   .form {
     flex: 1;
     overflow-y: auto;
-    padding: 0;
+    padding: 0 24px;
     max-height: none;
-    gap: 34px;
     display: flex;
     flex-direction: column;
+    gap: 16px;
   }
 
   .inputGroup {
     margin-bottom: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
   }
 
   .label {
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
     font-weight: 400;
-    font-style: normal;
     line-height: 110%;
-    letter-spacing: 0px;
     color: #000000;
     margin: 0;
-    font-variant-numeric: lining-nums;
-    font-variant-numeric-spacing: proportional-nums;
   }
 
   .input {
-    width: 237px;
-    height: 47px;
-    border-radius: 8px;
-    padding: 16px 18px;
+    width: 100%;
+    height: 48px;
+    border-radius: 10px;
+    padding: 14px 16px;
     border: 1px solid #d0d0d0;
     font-family: 'Roboto', sans-serif;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 400;
-    font-style: normal;
     line-height: 110%;
-    letter-spacing: 0px;
     color: #000000;
     background: #ffffff;
-    font-variant-numeric: lining-nums;
-    font-variant-numeric-spacing: proportional-nums;
   }
 
   .input::placeholder {
@@ -214,21 +305,62 @@
   }
 
   .footer {
-    padding: 0;
+    padding: 16px 24px 28px;
+    flex-shrink: 0;
   }
 
   .submitButton {
-    width: 263px;
-    height: 52px;
+    width: 100%;
+    height: 50px;
     border-radius: 46px;
-    padding: 16px 26px;
+    padding: 14px 24px;
     font-family: 'Roboto', sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 400;
-    font-style: normal;
     line-height: 110%;
-    letter-spacing: 0px;
-    font-variant-numeric: lining-nums;
-    font-variant-numeric-spacing: proportional-nums;
+  }
+}
+
+/* Маленькие телефоны */
+@media (max-width: 360px) {
+  .overlay {
+    padding: 12px;
+  }
+
+  .modal {
+    border-radius: 24px;
+  }
+
+  .header {
+    padding: 28px 20px 14px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .form {
+    padding: 0 20px;
+    gap: 14px;
+  }
+
+  .label {
+    font-size: 15px;
+  }
+
+  .input {
+    height: 46px;
+    padding: 12px 14px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+
+  .footer {
+    padding: 14px 20px 24px;
+  }
+
+  .submitButton {
+    height: 48px;
+    font-size: 15px;
   }
 }

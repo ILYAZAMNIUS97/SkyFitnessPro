@@ -205,7 +205,107 @@
   transform: translateY(-2px);
 }
 
-/* Планшетная версия */
+/* Планшетная версия (769px - 1024px) */
+/* Стилистика мобильной версии с адаптацией под большие экраны */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    padding: 0 40px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pageTitle {
+    font-size: 36px;
+    margin-bottom: 32px;
+    padding-top: 40px;
+    width: 100%;
+    text-align: left;
+  }
+
+  .profileCard {
+    width: 100%;
+    max-width: 100%;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 28px;
+    padding: 36px;
+    margin-bottom: 48px;
+    border-radius: 30px;
+    box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
+  }
+
+  .avatar {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+  }
+
+  .profileInfo {
+    width: 100%;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .userName {
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 110%;
+  }
+
+  .userLogin {
+    font-size: 18px;
+    line-height: 110%;
+  }
+
+  .logoutButton {
+    width: 300px;
+    max-width: 100%;
+    height: 54px;
+    padding: 16px 32px;
+    margin-top: 12px;
+    font-size: 18px;
+    border-radius: 46px;
+  }
+
+  .coursesSection {
+    width: 100%;
+    margin-top: 0;
+  }
+
+  .sectionTitle {
+    font-size: 36px;
+    margin-bottom: 32px;
+    width: 100%;
+    text-align: left;
+  }
+
+  /* Карточки курсов в 2 ряда для планшетов */
+  .coursesGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    width: 100%;
+  }
+
+  .noCourses {
+    width: 100%;
+    padding: 40px 32px;
+    border-radius: 30px;
+    box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
+  }
+
+  .noCourses p {
+    font-size: 18px;
+  }
+
+  .addCourseButton {
+    font-size: 18px;
+    padding: 16px 40px;
+    height: 54px;
+  }
+}
+
 @media (max-width: 1200px) {
   .coursesGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -251,7 +351,8 @@
 /* Мобильная версия */
 @media (max-width: 768px) {
   .container {
-    max-width: 375px;
+    max-width: 100%;
+    width: 100%;
     padding: 0 16px 50px;
     display: flex;
     flex-direction: column;
@@ -259,10 +360,10 @@
   }
 
   .pageTitle {
-    width: 343px;
+    width: 100%;
     max-width: 100%;
     font-family: 'Roboto', sans-serif;
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 500;
     line-height: 110%;
     color: #000000;
@@ -272,28 +373,28 @@
   }
 
   .profileCard {
-    width: 343px;
+    width: 100%;
     max-width: 100%;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 30px;
-    padding: 30px;
-    margin-bottom: 40px;
-    border-radius: 30px;
+    gap: 28px;
+    padding: 28px 24px;
+    margin-bottom: 36px;
+    border-radius: 28px;
     box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
   }
 
   .avatar {
-    width: 141px;
-    height: 141px;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
   }
 
   .profileInfo {
     width: 100%;
     align-items: center;
-    gap: 20px;
+    gap: 18px;
   }
 
   .userName {
@@ -312,10 +413,10 @@
   }
 
   .logoutButton {
-    width: 283px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 280px;
     height: 50px;
-    padding: 16px 26px;
+    padding: 14px 24px;
     margin-top: 10px;
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
@@ -325,13 +426,13 @@
   }
 
   .coursesSection {
-    width: 343px;
+    width: 100%;
     max-width: 100%;
     margin-top: 0;
   }
 
   .sectionTitle {
-    width: 343px;
+    width: 100%;
     max-width: 100%;
     font-family: 'Roboto', sans-serif;
     font-size: 24px;
@@ -341,17 +442,19 @@
     text-align: left;
   }
 
+  /* Карточки курсов в 2 ряда на 768px */
   .coursesGrid {
-    grid-template-columns: 1fr;
-    gap: 24px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
     justify-items: center;
+    width: 100%;
   }
 
   .noCourses {
-    width: 343px;
+    width: 100%;
     max-width: 100%;
-    padding: 30px;
-    border-radius: 30px;
+    padding: 28px 24px;
+    border-radius: 28px;
     box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
   }
 
@@ -360,9 +463,28 @@
     font-size: 16px;
     font-weight: 400;
     line-height: 110%;
+    margin-bottom: 20px;
   }
 
   .addCourseButton {
+    font-size: 16px;
+    padding: 14px 32px;
+  }
+
+  .loading {
+    padding: 60px 20px;
+  }
+
+  .error {
+    padding: 40px 24px;
+    border-radius: 28px;
+  }
+
+  .error p {
+    font-size: 16px;
+  }
+
+  .backButton {
     font-size: 16px;
     padding: 14px 32px;
   }
@@ -370,18 +492,130 @@
 
 @media (max-width: 480px) {
   .container {
-    padding: 30px 12px 50px;
+    padding: 24px 16px 50px;
   }
 
-  .pageTitle,
-  .profileCard,
-  .coursesSection,
-  .sectionTitle,
-  .noCourses {
-    width: 100%;
+  .pageTitle {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .profileCard {
+    padding: 24px 20px;
+    gap: 24px;
+    border-radius: 26px;
+  }
+
+  .avatar {
+    width: 120px;
+    height: 120px;
+  }
+
+  .profileInfo {
+    gap: 16px;
+  }
+
+  .userName {
+    font-size: 22px;
+  }
+
+  .userLogin {
+    font-size: 15px;
   }
 
   .logoutButton {
     width: 100%;
+    max-width: 100%;
+    height: 48px;
+    font-size: 15px;
+  }
+
+  .sectionTitle {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .coursesGrid {
+    gap: 20px;
+  }
+
+  .noCourses {
+    padding: 24px 20px;
+    border-radius: 26px;
+  }
+
+  .noCourses p {
+    font-size: 15px;
+    margin-bottom: 18px;
+  }
+
+  .addCourseButton {
+    font-size: 15px;
+    padding: 12px 28px;
+  }
+}
+
+/* Маленькие телефоны */
+@media (max-width: 360px) {
+  .container {
+    padding: 20px 12px 40px;
+  }
+
+  .pageTitle {
+    font-size: 22px;
+    margin-bottom: 18px;
+  }
+
+  .profileCard {
+    padding: 20px 16px;
+    gap: 20px;
+    border-radius: 24px;
+    margin-bottom: 28px;
+  }
+
+  .avatar {
+    width: 100px;
+    height: 100px;
+  }
+
+  .profileInfo {
+    gap: 14px;
+  }
+
+  .userName {
+    font-size: 20px;
+  }
+
+  .userLogin {
+    font-size: 14px;
+  }
+
+  .logoutButton {
+    height: 46px;
+    font-size: 14px;
+    padding: 12px 20px;
+  }
+
+  .sectionTitle {
+    font-size: 20px;
+    margin-bottom: 18px;
+  }
+
+  .coursesGrid {
+    gap: 18px;
+  }
+
+  .noCourses {
+    padding: 20px 16px;
+    border-radius: 24px;
+  }
+
+  .noCourses p {
+    font-size: 14px;
+  }
+
+  .addCourseButton {
+    font-size: 14px;
+    padding: 12px 24px;
   }
 }

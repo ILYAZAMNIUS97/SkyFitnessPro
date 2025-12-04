@@ -7,7 +7,8 @@
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   cursor: pointer;
-  width: 360px;
+  width: 100%;
+  max-width: 360px;
   height: 501px;
   padding-bottom: 15px;
   gap: 24px;
@@ -172,31 +173,27 @@
   flex-shrink: 0;
 }
 
-@media (max-width: 1024px) {
+/* Планшетная версия (769px - 1024px) */
+/* Стилистика мобильной версии с 2 колонками карточек */
+@media (min-width: 769px) and (max-width: 1024px) {
   .card {
     width: 100%;
-    max-width: 360px;
+    max-width: 100%;
     height: auto;
-  }
-}
-
-@media (max-width: 768px) {
-  .card {
-    width: 100%;
-    height: auto;
-    border-radius: 30px;
-    gap: 20px;
-    padding-bottom: 12px;
+    min-height: 420px;
+    border-radius: 28px;
+    gap: 22px;
+    padding-bottom: 18px;
   }
 
   .imageWrapper {
     height: 280px;
-    border-radius: 30px;
+    border-radius: 28px;
   }
 
   .content {
-    padding: 0 24px;
-    gap: 16px;
+    padding: 0 26px;
+    gap: 18px;
   }
 
   .title {
@@ -208,34 +205,44 @@
   }
 
   .metaItem {
-    font-size: 15px;
-    padding: 8px 12px;
+    font-size: 16px;
+    padding: 10px 14px;
   }
 
   .metaIcon {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
   }
 
   .addButton {
-    width: 24px;
-    height: 24px;
-    top: 20px;
-    right: 20px;
-    padding: 0;
+    width: 30px;
+    height: 30px;
+    top: 22px;
+    right: 22px;
   }
 
   .addButton img {
-    width: 24px;
-    height: 24px;
-    display: block;
+    width: 30px;
+    height: 30px;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 1024px) {
   .card {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
     border-radius: 28px;
-    gap: 18px;
+    gap: 20px;
+    padding-bottom: 14px;
   }
 
   .imageWrapper {
@@ -244,43 +251,166 @@
   }
 
   .content {
-    padding: 0 20px;
+    padding: 0 24px;
+    gap: 16px;
   }
 
   .title {
     font-size: 26px;
   }
 
+  .meta {
+    gap: 10px;
+  }
+
   .metaItem {
-    font-size: 14px;
-    padding: 7px 11px;
+    font-size: 15px;
+    padding: 9px 13px;
+  }
+
+  .metaIcon {
+    width: 16px;
+    height: 16px;
   }
 
   .addButton {
-    width: 22px;
-    height: 22px;
-    top: 16px;
-    right: 16px;
+    width: 26px;
+    height: 26px;
+    top: 20px;
+    right: 20px;
     padding: 0;
   }
 
   .addButton img {
-    width: 22px;
-    height: 22px;
+    width: 26px;
+    height: 26px;
     display: block;
   }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 480px) {
+  .card {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 26px;
+    gap: 18px;
+    padding-bottom: 12px;
+  }
+
   .imageWrapper {
     height: 240px;
+    border-radius: 26px;
+  }
+
+  .content {
+    padding: 0 20px;
+    gap: 14px;
   }
 
   .title {
     font-size: 24px;
   }
 
+  .meta {
+    gap: 8px;
+  }
+
+  .metaItem {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  .metaIcon {
+    width: 15px;
+    height: 15px;
+  }
+
+  .addButton {
+    width: 24px;
+    height: 24px;
+    top: 16px;
+    right: 16px;
+    padding: 0;
+  }
+
+  .addButton img {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+}
+
+/* Адаптивность для промежуточных разрешений мобильных */
+@media (min-width: 376px) and (max-width: 480px) {
+  .card {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .imageWrapper {
+    height: calc(70vw);
+    max-height: 280px;
+    min-height: 220px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .card {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .imageWrapper {
+    height: calc(60vw);
+    max-height: 300px;
+    min-height: 260px;
+  }
+}
+
+@media (max-width: 360px) {
+  .card {
+    border-radius: 24px;
+    gap: 16px;
+    padding-bottom: 10px;
+  }
+
+  .imageWrapper {
+    height: 220px;
+    border-radius: 24px;
+  }
+
+  .content {
+    padding: 0 18px;
+    gap: 12px;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .meta {
+    gap: 8px;
+  }
+
   .metaItem {
     font-size: 13px;
+    padding: 7px 11px;
+  }
+
+  .metaIcon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .addButton {
+    width: 22px;
+    height: 22px;
+    top: 14px;
+    right: 14px;
+  }
+
+  .addButton img {
+    width: 22px;
+    height: 22px;
   }
 }

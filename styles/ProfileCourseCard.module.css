@@ -195,11 +195,84 @@
   transform: translateY(0);
 }
 
+/* Планшетная версия (769px - 1024px) */
+/* Стилистика мобильной версии с 2 колонками карточек */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .card {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    min-height: 450px;
+    border-radius: 28px;
+    gap: 22px;
+    padding-bottom: 24px;
+  }
+
+  .imageWrapper {
+    height: 300px;
+    border-radius: 28px;
+  }
+
+  .content {
+    padding: 0 26px;
+    gap: 18px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .meta {
+    gap: 10px;
+  }
+
+  .metaItem {
+    font-size: 16px;
+    padding: 10px 14px;
+  }
+
+  .metaIcon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .removeButton {
+    width: 34px;
+    height: 34px;
+    top: 22px;
+    right: 22px;
+  }
+
+  .removeButton svg {
+    width: 16px;
+    height: 5px;
+  }
+
+  .progressSection {
+    gap: 10px;
+  }
+
+  .progressLabel {
+    font-size: 18px;
+  }
+
+  .progressBar {
+    height: 7px;
+  }
+
+  .actionButton {
+    font-size: 18px;
+    padding: 16px 26px;
+    height: 54px;
+    margin-top: 10px;
+  }
+}
+
 /* Планшет */
 @media (max-width: 1024px) {
   .card {
     width: 100%;
-    max-width: 360px;
+    max-width: 100%;
     height: auto;
   }
 }
@@ -207,22 +280,22 @@
 /* Мобильная версия */
 @media (max-width: 768px) {
   .card {
-    width: 343px;
+    width: 100%;
     max-width: 100%;
     height: auto;
-    border-radius: 30px;
-    gap: 24px;
-    padding-bottom: 15px;
+    border-radius: 28px;
+    gap: 22px;
+    padding-bottom: 18px;
   }
 
   .imageWrapper {
-    height: 343px;
-    border-radius: 30px;
+    height: 280px;
+    border-radius: 28px;
   }
 
   .content {
-    padding: 0 30px;
-    gap: 20px;
+    padding: 0 24px;
+    gap: 18px;
   }
 
   .title {
@@ -233,28 +306,33 @@
   }
 
   .meta {
-    gap: 12px;
+    gap: 10px;
   }
 
   .metaItem {
     font-family: 'Roboto', sans-serif;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 400;
     line-height: 110%;
-    padding: 10px 14px;
+    padding: 9px 13px;
     border-radius: 50px;
   }
 
   .metaIcon {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
   }
 
   .removeButton {
-    width: 32px;
-    height: 32px;
-    top: 20px;
-    right: 20px;
+    width: 30px;
+    height: 30px;
+    top: 18px;
+    right: 18px;
+  }
+
+  .removeButton svg {
+    width: 14px;
+    height: 4px;
   }
 
   .progressSection {
@@ -273,44 +351,128 @@
   }
 
   .actionButton {
-    width: 283px;
+    width: 100%;
     max-width: 100%;
     height: 50px;
     margin: 0 auto;
-    padding: 16px 26px;
+    padding: 14px 24px;
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
     font-weight: 400;
     line-height: 110%;
     border-radius: 46px;
+    margin-top: 6px;
   }
 }
 
 @media (max-width: 480px) {
   .card {
     width: 100%;
+    border-radius: 26px;
+    gap: 20px;
+    padding-bottom: 16px;
   }
 
   .imageWrapper {
-    height: 300px;
+    height: 260px;
+    border-radius: 26px;
   }
 
-  .actionButton {
-    width: 100%;
-  }
-}
-
-@media (max-width: 360px) {
-  .imageWrapper {
-    height: 280px;
+  .content {
+    padding: 0 20px;
+    gap: 16px;
   }
 
   .title {
     font-size: 22px;
   }
 
+  .meta {
+    gap: 8px;
+  }
+
   .metaItem {
     font-size: 14px;
     padding: 8px 12px;
+  }
+
+  .metaIcon {
+    width: 15px;
+    height: 15px;
+  }
+
+  .removeButton {
+    width: 28px;
+    height: 28px;
+    top: 16px;
+    right: 16px;
+  }
+
+  .removeButton svg {
+    width: 12px;
+    height: 4px;
+  }
+
+  .progressLabel {
+    font-size: 15px;
+  }
+
+  .progressBar {
+    height: 6px;
+  }
+
+  .actionButton {
+    height: 48px;
+    font-size: 15px;
+    padding: 12px 20px;
+  }
+}
+
+@media (max-width: 360px) {
+  .card {
+    border-radius: 24px;
+    gap: 18px;
+    padding-bottom: 14px;
+  }
+
+  .imageWrapper {
+    height: 240px;
+    border-radius: 24px;
+  }
+
+  .content {
+    padding: 0 18px;
+    gap: 14px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .metaItem {
+    font-size: 13px;
+    padding: 7px 11px;
+  }
+
+  .metaIcon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .removeButton {
+    width: 26px;
+    height: 26px;
+    top: 14px;
+    right: 14px;
+  }
+
+  .progressLabel {
+    font-size: 14px;
+  }
+
+  .actionButton {
+    height: 46px;
+    font-size: 14px;
+    padding: 12px 18px;
   }
 }

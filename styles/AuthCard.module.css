@@ -134,25 +134,132 @@
   color: #ffffff;
 }
 
+/* Планшетная версия */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .card {
+    width: 380px;
+    padding: 36px 32px 40px;
+    border-radius: 30px;
+    gap: 28px;
+    box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
+  }
+
+  .form {
+    gap: 16px;
+  }
+
+  .input {
+    height: 54px;
+    font-size: 17px;
+    padding: 0 18px;
+    border-radius: 14px;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    height: 56px;
+    font-size: 18px;
+  }
+
+  .errorText {
+    font-size: 14px;
+  }
+
+  .serverError,
+  .successMessage {
+    font-size: 15px;
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+}
+
 @media (max-width: 768px) {
   .card {
     width: 100%;
-    padding: 24px 20px 28px;
+    max-width: 360px;
+    padding: 28px 24px 32px;
+    border-radius: 28px;
+    gap: 24px;
+  }
+
+  .form {
+    gap: 14px;
+  }
+
+  .input {
+    height: 50px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    height: 52px;
+    font-size: 17px;
   }
 }
 
 @media (max-width: 480px) {
   .card {
-    width: 343px;
+    width: 100%;
     max-width: 100%;
-    min-height: 425px;
-    padding: 40px;
-    border-radius: 30px;
-    gap: 48px;
-    box-shadow: 0px 4px 67px -12px #00000021;
+    min-height: auto;
+    padding: 32px 24px;
+    border-radius: 28px;
+    gap: 36px;
+    box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
   }
 
   .form {
-    gap: 18px;
+    gap: 16px;
+  }
+
+  .input {
+    height: 48px;
+    font-size: 15px;
+    padding: 0 14px;
+    border-radius: 10px;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    height: 50px;
+    font-size: 16px;
+  }
+
+  .errorText {
+    font-size: 13px;
+  }
+
+  .serverError,
+  .successMessage {
+    font-size: 14px;
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 360px) {
+  .card {
+    padding: 28px 20px;
+    border-radius: 24px;
+    gap: 32px;
+  }
+
+  .form {
+    gap: 14px;
+  }
+
+  .input {
+    height: 46px;
+    font-size: 14px;
+    padding: 0 12px;
+    border-radius: 10px;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    height: 48px;
+    font-size: 15px;
   }
 }

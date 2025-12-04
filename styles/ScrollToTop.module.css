@@ -17,6 +17,7 @@
   transition: all 0.3s ease;
   cursor: pointer;
   width: fit-content;
+  max-width: calc(100% - 32px);
 }
 
 .scrollButton:hover {
@@ -30,10 +31,31 @@
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
 }
 
+/* Планшетная версия */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .scrollButton {
+    margin: 30px auto 0;
+    padding: 16px 36px;
+    font-size: 19px;
+  }
+}
+
 @media (max-width: 768px) {
   .scrollButton {
-    margin: 24px 0 0 auto;
+    margin: 24px auto 0;
     padding: 12px 24px;
     font-size: 16px;
+    width: fit-content;
+    max-width: calc(100% - 32px);
+  }
+}
+
+@media (max-width: 480px) {
+  .scrollButton {
+    margin: 24px auto 0;
+    padding: 12px 20px;
+    font-size: 15px;
+    width: fit-content;
+    max-width: calc(100% - 24px);
   }
 }
