@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { getStoredToken, getStoredUser } from '@/hooks/useAuth';
 import AuthModal from './AuthModal';
+import SuccessModal from './SuccessModal';
 import { ICourse } from '@/types/course';
 import styles from '@/styles/CourseCard.module.css';
 
@@ -34,6 +35,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [hasCourse, setHasCourse] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   /**
    * Проверяет, добавлен ли курс у пользователя
@@ -102,7 +104,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
 
         if (response.ok) {
           setHasCourse(true);
-          router.push('/profile');
+          setShowSuccessModal(true);
         } else {
           const data = await response.json();
           alert(data.message || 'Ошибка при добавлении курса');
@@ -195,6 +197,11 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
       {/* Модальное окно авторизации */}
       {isAuthModalOpen && (
         <AuthModal onClose={() => setIsAuthModalOpen(false)} onSuccess={handleAuthSuccess} />
+      )}
+
+      {/* Модальное окно успешного добавления курса */}
+      {showSuccessModal && (
+        <SuccessModal onClose={() => setShowSuccessModal(false)} title="Курс добавлен!" />
       )}
     </>
   );
