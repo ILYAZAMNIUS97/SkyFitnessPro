@@ -71,6 +71,15 @@
   position: relative;
   display: inline-flex;
   align-items: center;
+  outline: none !important;
+}
+
+.userMenuWrapper:focus {
+  outline: none !important;
+}
+
+.userMenuWrapper * {
+  outline: none !important;
 }
 
 .navLink {
@@ -109,22 +118,81 @@
   transform: translateY(-1px);
 }
 
-.userProfileButtonActive {
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
-  border-color: transparent;
-}
-
 .userProfileButton {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 0;
-  border: none;
+  border: none !important;
   background: transparent;
   font-size: 18px;
   font-weight: 500;
   color: #1a1a1a;
   cursor: pointer;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  box-shadow: none !important;
+}
+
+.userProfileButton:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.userProfileButton:active {
+  outline: none !important;
+  border: none !important;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: none !important;
+}
+
+.userProfileButton:focus-visible {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.userProfileButton:hover {
+  outline: none !important;
+  border: none !important;
+}
+
+.userProfileButton * {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.userProfileButton *:focus {
+  outline: none !important;
+}
+
+.userProfileButton *:active {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.userProfileButtonActive {
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
+  border: none !important;
+  outline: none !important;
+  border-color: transparent;
+}
+
+.userProfileButtonActive:focus {
+  outline: none !important;
+  border: none !important;
+}
+
+.userProfileButtonActive:active {
+  outline: none !important;
+  border: none !important;
+}
+
+.userProfileButtonActive:focus-visible {
+  outline: none !important;
+  border: none !important;
 }
 
 .userAvatar {
@@ -148,6 +216,17 @@
   font-size: 18px;
   font-weight: 500;
   color: #202020;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.userName:focus {
+  outline: none !important;
+}
+
+.userName:active {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .userCaret {

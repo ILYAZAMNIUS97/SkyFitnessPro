@@ -37,6 +37,7 @@ const Header: React.FC<HeaderProps> = ({ onLoginClick, onLogout, user }) => {
   const router = useRouter();
   const [isMenuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   /**
    * Закрытие меню при клике вне его области
@@ -84,6 +85,19 @@ const Header: React.FC<HeaderProps> = ({ onLoginClick, onLogout, user }) => {
     setMenuOpen((prev) => !prev);
   }, []);
 
+  /**
+   * Обработчик клика мыши - убирает фокус для предотвращения обводки
+   */
+  const handleButtonClick = useCallback(() => {
+    toggleMenu();
+    // Убираем фокус после клика мыши, чтобы не было обводки
+    setTimeout(() => {
+      if (buttonRef.current) {
+        buttonRef.current.blur();
+      }
+    }, 0);
+  }, [toggleMenu]);
+
   return (
     <header className={styles.header}>
       <div className={styles.container}>
@@ -99,11 +113,12 @@ const Header: React.FC<HeaderProps> = ({ onLoginClick, onLogout, user }) => {
             /* Меню авторизованного пользователя */
             <div className={styles.userMenuWrapper} ref={menuRef}>
               <button
+                ref={buttonRef}
                 type="button"
                 className={`${styles.userProfileButton} ${
                   isMenuOpen ? styles.userProfileButtonActive : ''
                 }`}
-                onClick={toggleMenu}
+                onClick={handleButtonClick}
                 aria-haspopup="true"
                 aria-expanded={isMenuOpen}
               >
