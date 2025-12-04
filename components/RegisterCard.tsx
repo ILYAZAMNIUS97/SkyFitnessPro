@@ -3,7 +3,6 @@
  * Содержит форму регистрации с валидацией через React Hook Form и Zod
  */
 
-import Image from 'next/image';
 import { useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -125,7 +124,7 @@ export default function RegisterCard({
       {/* Логотип */}
       {showLogo && (
         <div className={styles.logoBlock}>
-          <Image src="/img/icon/logo.svg" alt="SkyFitnessPro" width={160} height={36} priority />
+          <img src="/img/icon/logo.svg" alt="SkyFitnessPro" width={160} height={36} />
         </div>
       )}
 
