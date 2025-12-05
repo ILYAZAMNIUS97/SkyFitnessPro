@@ -3,6 +3,7 @@
  * Отображает видео тренировки и список упражнений с прогрессом
  */
 
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useCallback } from 'react';
@@ -11,8 +12,16 @@ import WorkoutSelectModal from '@/components/WorkoutSelectModal';
 import ProgressModal from '@/components/ProgressModal';
 import SuccessModal from '@/components/SuccessModal';
 import { getStoredToken, getStoredUser } from '@/hooks/useAuth';
-import { getYouTubeEmbedUrl, calculateProgress } from '@/lib/utils';
+import {
+  getYouTubeEmbedUrl,
+  calculateProgress,
+  serializeDocument,
+  serializeDocuments,
+} from '@/lib/utils';
 import { ICourse, IWorkout, IUserProgress } from '@/types/course';
+import dbConnect from '@/lib/mongodb';
+import Course from '@/models/Course';
+import Workout from '@/models/Workout';
 import styles from '@/styles/WorkoutPage.module.css';
 
 /**
@@ -24,20 +33,29 @@ interface ExerciseProgress {
 }
 
 /**
+ * Props страницы тренировки
+ */
+interface WorkoutPageProps {
+  /** Данные курса (null если не найден) */
+  course: ICourse | null;
+  /** Список тренировок курса */
+  workouts: IWorkout[];
+  /** Сообщение об ошибке */
+  errorMessage: string | null;
+}
+
+/**
  * Страница тренировки
  * Защищённая страница, требует авторизации
  */
-export default function WorkoutPage() {
+export default function WorkoutPage({ course, workouts, errorMessage }: WorkoutPageProps) {
   const router = useRouter();
-  const { courseId } = router.query;
 
   // Состояние данных
-  const [course, setCourse] = useState<ICourse | null>(null);
-  const [workouts, setWorkouts] = useState<IWorkout[]>([]);
   const [selectedWorkout, setSelectedWorkout] = useState<IWorkout | null>(null);
   const [userProgress, setUserProgress] = useState<IUserProgress[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(errorMessage);
 
   // Состояние модальных окон
   const [showWorkoutSelect, setShowWorkoutSelect] = useState(false);
@@ -45,10 +63,10 @@ export default function WorkoutPage() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   /**
-   * Загрузка данных курса и тренировок
+   * Загрузка прогресса пользователя
    */
-  const loadData = useCallback(async () => {
-    if (!courseId || typeof courseId !== 'string') return;
+  const loadUserProgress = useCallback(async () => {
+    if (!course) return;
 
     const token = getStoredToken();
     const user = getStoredUser();
@@ -60,36 +78,9 @@ export default function WorkoutPage() {
 
     try {
       setLoading(true);
-      setError(null);
-
-      // Загружаем курс
-      const courseResponse = await fetch(`/api/courses/${courseId}`);
-      const courseData = await courseResponse.json();
-
-      if (!courseData.success) {
-        throw new Error('Курс не найден');
-      }
-
-      setCourse(courseData.data);
-
-      // Загружаем тренировки
-      const workoutsResponse = await fetch(`/api/workouts/${courseId}`);
-      const workoutsData = await workoutsResponse.json();
-
-      if (workoutsData.success && Array.isArray(workoutsData.data)) {
-        setWorkouts(workoutsData.data);
-        if (workoutsData.data.length > 0) {
-          setShowWorkoutSelect(true);
-        } else {
-          setError('Для этого курса пока нет тренировок');
-        }
-      } else {
-        setWorkouts([]);
-        setError(workoutsData.error || 'Не удалось загрузить тренировки');
-      }
 
       // Загружаем прогресс пользователя
-      const progressResponse = await fetch(`/api/user/progress?courseId=${courseId}`, {
+      const progressResponse = await fetch(`/api/user/progress?courseId=${course._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const progressData = await progressResponse.json();
@@ -97,17 +88,21 @@ export default function WorkoutPage() {
       if (progressData.success) {
         setUserProgress(progressData.progress || []);
       }
+
+      // Показываем модальное окно выбора тренировки если есть тренировки
+      if (workouts.length > 0) {
+        setShowWorkoutSelect(true);
+      }
     } catch (err) {
-      console.error('Ошибка загрузки данных:', err);
-      setError('Не удалось загрузить данные тренировки');
+      console.error('Ошибка загрузки прогресса:', err);
     } finally {
       setLoading(false);
     }
-  }, [courseId, router]);
+  }, [course, workouts.length, router]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    loadUserProgress();
+  }, [loadUserProgress]);
 
   /**
    * Выбор тренировки
@@ -127,7 +122,7 @@ export default function WorkoutPage() {
    */
   const handleSaveProgress = useCallback(
     async (progress: ExerciseProgress[]) => {
-      if (!selectedWorkout || !courseId) return;
+      if (!selectedWorkout || !course) return;
 
       const token = getStoredToken();
       if (!token) {
@@ -143,7 +138,7 @@ export default function WorkoutPage() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            courseId,
+            courseId: course._id,
             workoutId: selectedWorkout._id,
             completedExercises: progress,
           }),
@@ -155,14 +150,14 @@ export default function WorkoutPage() {
           // Обновляем локальный прогресс
           setUserProgress((prev) => {
             const newProgress: IUserProgress = {
-              courseId: courseId as string,
+              courseId: course._id,
               workoutId: selectedWorkout._id,
               completedExercises: progress,
               completedAt: new Date(),
             };
 
             const existingIndex = prev.findIndex(
-              (p) => p.courseId === courseId && p.workoutId === selectedWorkout._id
+              (p) => p.courseId === course._id && p.workoutId === selectedWorkout._id
             );
 
             if (existingIndex !== -1) {
@@ -180,7 +175,7 @@ export default function WorkoutPage() {
         console.error('Ошибка сохранения прогресса:', err);
       }
     },
-    [selectedWorkout, courseId, router]
+    [selectedWorkout, course, router]
   );
 
   /**
@@ -344,3 +339,50 @@ export default function WorkoutPage() {
     </Layout>
   );
 }
+
+/**
+ * Серверная загрузка данных курса и тренировок
+ */
+export const getServerSideProps: GetServerSideProps<WorkoutPageProps> = async (context) => {
+  const { courseId } = context.params as { courseId: string };
+
+  try {
+    await dbConnect();
+
+    // Загружаем курс
+    const course = await Course.findById(courseId).lean();
+
+    if (!course) {
+      return {
+        props: {
+          course: null,
+          workouts: [],
+          errorMessage: 'Курс не найден',
+        },
+      };
+    }
+
+    // Загружаем тренировки курса
+    const workouts = await Workout.find({ courseId }).sort({ order: 1 }).lean();
+
+    // Проверяем наличие тренировок
+    const errorMessage = workouts.length === 0 ? 'Для этого курса пока нет тренировок' : null;
+
+    return {
+      props: {
+        course: serializeDocument<ICourse>(course as ICourse),
+        workouts: serializeDocuments<IWorkout>(workouts as IWorkout[]),
+        errorMessage,
+      },
+    };
+  } catch (error) {
+    console.error('Ошибка загрузки данных тренировки:', error);
+    return {
+      props: {
+        course: null,
+        workouts: [],
+        errorMessage: 'Не удалось загрузить данные тренировки',
+      },
+    };
+  }
+};
