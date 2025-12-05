@@ -10,8 +10,8 @@
   --accent-color: #c7ff2e;
   --text-primary: #000000;
   --text-secondary: #666666;
-  --bg-primary: #ffffff;
-  --bg-secondary: #f7f7f7;
+  --bg-primary: #fafafa;
+  --bg-secondary: #fafafa;
   --bg-card: #ffffff;
   --border-color: #e0e0e0;
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -19,6 +19,10 @@
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
   --border-radius: 30px;
   --transition: all 0.3s ease;
+
+  /* Шрифты */
+  --font-roboto: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   /* Цвета для карточек курсов */
   --yoga-color: #ffc700;
@@ -46,7 +50,7 @@ body {
     'Helvetica Neue',
     sans-serif;
   color: var(--text-primary);
-  background-color: var(--bg-secondary);
+  background-color: #fafafa;
 }
 
 body {

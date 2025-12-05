@@ -1,0 +1,459 @@
+/* Модальное окно выбора тренировки */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal {
+  width: 100%;
+  max-width: 444px;
+  max-height: 90vh;
+  background: #ffffff;
+  border-radius: 30px;
+  box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 36px 36px 24px;
+  text-align: center;
+}
+
+.title {
+  font-family: 'Roboto', sans-serif;
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 110%;
+  color: #000000;
+  margin: 0;
+}
+
+.warning {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 140%;
+  color: #856404;
+  text-align: center;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.workoutsList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 36px;
+  max-height: 400px;
+}
+
+.workoutItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid #e0e0e0;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.workoutItem:last-child {
+  border-bottom: none;
+}
+
+.workoutItem:hover {
+  background: #f5f5f5;
+  margin: 0 -36px;
+  padding: 16px 36px;
+}
+
+.checkbox {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #d0d0d0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  transition: all 0.2s ease;
+}
+
+.checkbox.selected {
+  background: #bcec30;
+  border-color: #bcec30;
+}
+
+.checkbox.completed {
+  background: #bcec30;
+  border-color: #bcec30;
+}
+
+.checkmark {
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.workoutInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.workoutTitle {
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 110%;
+  color: #000000;
+}
+
+.workoutSubtitle {
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 110%;
+  color: #999999;
+}
+
+.footer {
+  padding: 24px 36px 36px;
+}
+
+.submitButton {
+  width: 100%;
+  height: 52px;
+  background: #bcec30;
+  color: #000000;
+  border: none;
+  border-radius: 46px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 110%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submitButton:hover {
+  background: #a8d429;
+}
+
+.submitButton:disabled {
+  background: #e0e0e0;
+  cursor: not-allowed;
+}
+
+/* Планшетная версия */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .overlay {
+    padding: 40px;
+  }
+
+  .modal {
+    max-width: 520px;
+    max-height: 85vh;
+    border-radius: 30px;
+  }
+
+  .header {
+    padding: 40px 40px 28px;
+  }
+
+  .title {
+    font-size: 36px;
+  }
+
+  .warning {
+    margin-top: 14px;
+    padding: 14px 18px;
+    font-size: 15px;
+    border-radius: 10px;
+  }
+
+  .workoutsList {
+    padding: 0 40px;
+    max-height: 450px;
+  }
+
+  .workoutItem {
+    gap: 16px;
+    padding: 18px 0;
+  }
+
+  .workoutItem:hover {
+    margin: 0 -40px;
+    padding: 18px 40px;
+  }
+
+  .checkbox {
+    width: 24px;
+    height: 24px;
+  }
+
+  .checkmark {
+    font-size: 14px;
+  }
+
+  .workoutTitle {
+    font-size: 20px;
+  }
+
+  .workoutSubtitle {
+    font-size: 15px;
+  }
+
+  .footer {
+    padding: 28px 40px 40px;
+  }
+
+  .submitButton {
+    height: 56px;
+    font-size: 20px;
+  }
+}
+
+/* Средние мобильные экраны */
+@media (max-width: 768px) {
+  .overlay {
+    padding: 20px;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 400px;
+    max-height: 85vh;
+    border-radius: 28px;
+  }
+
+  .header {
+    padding: 32px 28px 20px;
+    text-align: left;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .warning {
+    margin-top: 12px;
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .workoutsList {
+    padding: 0 28px;
+    max-height: 380px;
+  }
+
+  .workoutItem {
+    padding: 14px 0;
+    gap: 12px;
+  }
+
+  .workoutItem:hover {
+    margin: 0 -28px;
+    padding: 14px 28px;
+  }
+
+  .workoutTitle {
+    font-size: 17px;
+  }
+
+  .workoutSubtitle {
+    font-size: 14px;
+  }
+
+  .footer {
+    padding: 20px 28px 28px;
+  }
+
+  .submitButton {
+    height: 50px;
+    font-size: 17px;
+  }
+}
+
+/* Мобильная версия */
+@media (max-width: 480px) {
+  .overlay {
+    padding: 16px;
+    align-items: center;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 28px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
+  }
+
+  .header {
+    padding: 28px 24px 16px;
+    text-align: left;
+    flex-shrink: 0;
+  }
+
+  .title {
+    font-family: 'Roboto', sans-serif;
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 110%;
+    color: #000000;
+    margin: 0;
+  }
+
+  .warning {
+    margin-top: 12px;
+    padding: 10px 14px;
+    font-size: 13px;
+    width: 100%;
+  }
+
+  .workoutsList {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 24px;
+    max-height: none;
+  }
+
+  .workoutItem {
+    padding: 14px 0;
+    gap: 12px;
+  }
+
+  .workoutItem:hover {
+    background: transparent;
+    margin: 0;
+    padding: 14px 0;
+  }
+
+  .checkbox {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .checkmark {
+    font-size: 12px;
+  }
+
+  .workoutTitle {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 110%;
+    color: #000000;
+  }
+
+  .workoutSubtitle {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 110%;
+    color: #999999;
+  }
+
+  .footer {
+    padding: 16px 24px 28px;
+    flex-shrink: 0;
+  }
+
+  .submitButton {
+    width: 100%;
+    height: 50px;
+    border-radius: 46px;
+    padding: 14px 24px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 110%;
+  }
+}
+
+/* Маленькие телефоны */
+@media (max-width: 360px) {
+  .overlay {
+    padding: 12px;
+  }
+
+  .modal {
+    border-radius: 24px;
+  }
+
+  .header {
+    padding: 24px 20px 14px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .warning {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .workoutsList {
+    padding: 0 20px;
+  }
+
+  .workoutItem {
+    padding: 12px 0;
+    gap: 10px;
+  }
+
+  .checkbox {
+    width: 18px;
+    height: 18px;
+  }
+
+  .workoutTitle {
+    font-size: 15px;
+  }
+
+  .workoutSubtitle {
+    font-size: 13px;
+  }
+
+  .footer {
+    padding: 14px 20px 24px;
+  }
+
+  .submitButton {
+    height: 48px;
+    font-size: 15px;
+  }
+}

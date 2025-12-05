@@ -1,24 +1,123 @@
+/**
+ * @fileoverview Страница отдельного курса
+ * Отображает подробную информацию о курсе и позволяет добавить его
+ */
+
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { useState, useEffect, useCallback } from 'react';
 import Layout from '@/components/Layout';
+import AuthModal from '@/components/AuthModal';
+import SuccessModal from '@/components/SuccessModal';
+import { getStoredToken, getStoredUser } from '@/hooks/useAuth';
+import { useUserCourses } from '@/hooks/useUserCourses';
+import { serializeDocument } from '@/lib/utils';
 import { ICourse } from '@/types/course';
 import dbConnect from '@/lib/mongodb';
 import Course from '@/models/Course';
 import styles from '@/styles/CoursePage.module.css';
 
+/**
+ * Props страницы курса
+ */
 interface CoursePageProps {
+  /** Данные курса (null если не найден) */
   course: ICourse | null;
 }
 
+/**
+ * Страница курса
+ * Отображает описание курса, направления и CTA-секцию
+ */
 export default function CoursePage({ course }: CoursePageProps) {
   const router = useRouter();
+  const { hasCourse, addCourse, isLoading: isLoadingCourses } = useUserCourses();
 
+  // Состояние компонента
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  /**
+   * Проверка авторизации при монтировании
+   */
+  useEffect(() => {
+    const token = getStoredToken();
+    const user = getStoredUser();
+
+    if (token && user) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  // Слушаем изменения авторизации
+  useEffect(() => {
+    const handleAuthChange = () => {
+      const token = getStoredToken();
+      const user = getStoredUser();
+      setIsAuthenticated(!!(token && user));
+    };
+
+    window.addEventListener('authStateChanged', handleAuthChange);
+    return () => {
+      window.removeEventListener('authStateChanged', handleAuthChange);
+    };
+  }, []);
+
+  /**
+   * Обработчик добавления курса
+   */
+  const handleAddCourse = useCallback(async () => {
+    if (!isAuthenticated || !course) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    const courseAdded = hasCourse(course._id);
+    if (courseAdded) {
+      router.push('/profile');
+      return;
+    }
+
+    // Добавляем курс через хук
+    const success = await addCourse(course._id);
+    if (success) {
+      setShowSuccessModal(true);
+    } else {
+      alert('Ошибка при добавлении курса');
+    }
+  }, [isAuthenticated, hasCourse, course, router, addCourse]);
+
+  /**
+   * Обработчик успешной авторизации
+   */
+  const handleAuthSuccess = useCallback(() => {
+    setIsAuthModalOpen(false);
+    setIsAuthenticated(true);
+    // После авторизации курсы автоматически загрузятся через Provider
+  }, []);
+
+  /**
+   * Получение текста кнопки
+   */
+  const getButtonText = (): string => {
+    if (!course) return 'Курс не найден';
+    if (hasCourse(course._id)) return 'Перейти к тренировкам';
+    if (!isAuthenticated) return 'Войдите, чтобы добавить курс';
+    return 'Добавить курс';
+  };
+
+  // Курс не найден
   if (!course) {
     return (
       <Layout>
         <Head>
           <title>Курс не найден - SkyFitnessPro</title>
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=5.0"
+          />
         </Head>
         <div className={styles.container}>
           <div className={styles.notFound}>
@@ -36,53 +135,123 @@ export default function CoursePage({ course }: CoursePageProps) {
   return (
     <Layout>
       <Head>
-        <title>{course.title} - SkyFitnessPro</title>
+        <title>{course.nameRU} - SkyFitnessPro</title>
         <meta name="description" content={course.description} />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
       </Head>
 
       <div className={styles.container}>
+        {/* Hero Banner */}
         <div className={styles.hero}>
-          <div className={styles.heroImage}>
-            <img src={course.image} alt={course.title} />
-          </div>
-          <div className={styles.heroContent}>
-            <h1 className={styles.title}>{course.title}</h1>
-            <p className={styles.description}>{course.description}</p>
-            <div className={styles.meta}>
-              <div className={styles.metaItem}>
-                <span className={styles.metaLabel}>Длительность:</span>
-                <span className={styles.metaValue}>
-                  {course.duration} {course.duration === 1 ? 'день' : 'дней'}
-                </span>
-              </div>
-              <div className={styles.metaItem}>
-                <span className={styles.metaLabel}>Уровень:</span>
-                <span className={styles.metaValue}>{course.difficulty}</span>
-              </div>
-            </div>
-            <button className={styles.startButton}>Начать курс</button>
-          </div>
+          <img
+            src={course.heroImage || course.image}
+            alt={course.nameRU}
+            className={styles.heroImageDesktop}
+          />
+          <img src={course.image} alt={course.nameRU} className={styles.heroImageMobile} />
         </div>
 
-        <section className={styles.workoutsSection}>
-          <h2 className={styles.sectionTitle}>Тренировки</h2>
-          {course.workouts.length === 0 ? (
-            <p className={styles.emptyText}>
-              Тренировки для этого курса еще не добавлены. Скоро они появятся!
-            </p>
-          ) : (
-            <div className={styles.workoutsList}>
-              {/* Здесь будет список тренировок */}
-              <p className={styles.emptyText}>Тренировки будут отображаться здесь</p>
+        {/* Подойдет для вас */}
+        {course.fitting && course.fitting.length > 0 && (
+          <section className={styles.fittingSection}>
+            <h2 className={styles.sectionTitle}>Подойдет для вас, если:</h2>
+            <div className={styles.fittingCards}>
+              {course.fitting.map((item, index) => (
+                <div key={index} className={styles.fittingCard}>
+                  <span className={styles.fittingNumber}>{index + 1}</span>
+                  <p className={styles.fittingText}>{item}</p>
+                </div>
+              ))}
             </div>
-          )}
+          </section>
+        )}
+
+        {/* Направления */}
+        {course.directions && course.directions.length > 0 && (
+          <section className={styles.directionsSection}>
+            <h2 className={styles.sectionTitle}>Направления</h2>
+            <div className={styles.directionsGrid}>
+              {course.directions.map((direction, index) => (
+                <div key={index} className={styles.directionItem}>
+                  <img src="/img/icon/star.svg" alt="" className={styles.directionIcon} />
+                  <span className={styles.directionText}>{direction}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Бегун для мобильной версии */}
+        <div className={styles.mobileRunnerSection}>
+          <img src="/img/vector-6084.png" alt="" className={styles.mobileVectorBack} />
+          <img src="/img/vector-6094.png" alt="" className={styles.mobileVectorFront} />
+          <img
+            src="/img/runner.png"
+            alt="Start your fitness journey"
+            className={styles.mobileRunnerImage}
+          />
+        </div>
+
+        {/* CTA секция */}
+        <section className={styles.ctaSection}>
+          <div className={styles.ctaVectorContainer}>
+            <img src="/img/vector-6084.png" alt="" className={styles.ctaVectorBack} />
+          </div>
+          <div className={styles.ctaContent}>
+            <h2 className={styles.ctaTitle}>
+              Начните путь
+              <br />к новому телу
+            </h2>
+            {course.description && (
+              <ul className={styles.benefitsList}>
+                {course.description
+                  .split('\n')
+                  .filter((line) => line.trim())
+                  .map((benefit, index) => (
+                    <li key={index} className={styles.benefitItem}>
+                      {benefit}
+                    </li>
+                  ))}
+              </ul>
+            )}
+            <button
+              className={styles.ctaButton}
+              onClick={handleAddCourse}
+              disabled={isLoadingCourses}
+            >
+              {isLoadingCourses ? 'Загрузка...' : getButtonText()}
+            </button>
+          </div>
+          <div className={styles.ctaImage}>
+            <div className={styles.ctaImageWrapper}>
+              <img src="/img/vector-6094.png" alt="" className={styles.ctaVectorFront} />
+              <img
+                src="/img/runner.png"
+                alt="Start your fitness journey"
+                className={styles.runnerImage}
+              />
+            </div>
+          </div>
         </section>
       </div>
+
+      {/* Модальное окно авторизации */}
+      {isAuthModalOpen && (
+        <AuthModal onClose={() => setIsAuthModalOpen(false)} onSuccess={handleAuthSuccess} />
+      )}
+
+      {/* Модальное окно успешного добавления курса */}
+      {showSuccessModal && (
+        <SuccessModal onClose={() => setShowSuccessModal(false)} title="Курс добавлен!" />
+      )}
     </Layout>
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+/**
+ * Серверная загрузка данных курса
+ */
+export const getServerSideProps: GetServerSideProps<CoursePageProps> = async (context) => {
   const { id } = context.params as { id: string };
 
   try {
@@ -90,34 +259,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const course = await Course.findById(id).lean();
 
     if (!course) {
-      return {
-        props: {
-          course: null,
-        },
-      };
+      return { props: { course: null } };
     }
-
-    // Преобразуем MongoDB объект в простой объект для сериализации
-    const serializedCourse = {
-      ...course,
-      _id: course._id.toString(),
-      createdAt: course.createdAt.toISOString(),
-      updatedAt: course.updatedAt.toISOString(),
-      workouts: course.workouts.map((id) => id.toString()),
-    };
 
     return {
       props: {
-        course: serializedCourse,
+        course: serializeDocument<ICourse>(course as ICourse),
       },
     };
   } catch (error) {
-    console.error('Error fetching course:', error);
-    return {
-      props: {
-        course: null,
-      },
-    };
+    console.error('Ошибка загрузки курса:', error);
+    return { props: { course: null } };
   }
 };
-

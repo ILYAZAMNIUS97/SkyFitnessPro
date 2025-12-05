@@ -2,10 +2,41 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #fafafa;
 }
 
 .main {
   flex: 1;
-  padding-top: 80px;
+  padding-top: 125px; /* 45px отступ от края + 80px высота хедера */
+  padding-bottom: 80px;
+  background-color: #fafafa;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
+/* Планшетная версия */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .main {
+    padding-top: 100px; /* 20px отступ от края + 80px высота хедера */
+    padding-bottom: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding-top: 116px; /* 20px отступ от края + 96px высота хедера */
+    padding-bottom: 60px;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .main {
+    padding-top: 72px; /* 16px отступ от края + 56px высота хедера */
+    padding-bottom: 50px;
+    width: 100%;
+    max-width: 100%;
+  }
+}

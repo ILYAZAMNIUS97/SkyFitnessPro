@@ -1,31 +1,35 @@
 .card {
   display: flex;
   flex-direction: column;
-  background: var(--bg-card);
-  border-radius: var(--border-radius);
-  overflow: visible;
-  box-shadow: var(--shadow-sm);
-  transition: var(--transition);
+  background: #ffffff;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
   cursor: pointer;
-  height: 100%;
+  width: 100%;
+  max-width: 360px;
+  height: 501px;
+  padding-bottom: 15px;
+  gap: 24px;
 }
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.15);
 }
 
 .imageWrapper {
   width: 100%;
-  height: 320px;
+  height: 360px;
   overflow: hidden;
-  background-color: var(--bg-secondary);
-  border-radius: var(--border-radius);
+  background-color: #ffc700;
+  border-radius: 30px;
   position: relative;
-  margin-bottom: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0;
 }
 
 .imageWrapper a {
@@ -38,104 +42,375 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: var(--transition);
+  transition: transform 0.3s ease;
 }
 
 .card:hover .image {
-  transform: scale(1.02);
+  transform: scale(1.05);
 }
 
 .addButton {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 40px;
-  height: 40px;
-  background: white;
+  top: 24px;
+  right: 24px;
+  width: 27px;
+  height: 27px;
+  background: transparent;
   border: none;
   border-radius: 50%;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: var(--transition);
-  font-size: 24px;
-  color: var(--text-primary);
+  filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.15));
+  transition: all 0.3s ease;
+  z-index: 2;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  padding: 0;
+}
+
+.addButton img {
+  width: 27px;
+  height: 27px;
+  display: block;
 }
 
 .addButton:hover {
   transform: scale(1.1);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.addButton:focus {
+  outline: none !important;
+}
+
+.addButton:active {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+  background: transparent;
+}
+
+.addButton:focus-visible {
+  outline: none !important;
+}
+
+.addButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.addButtonAdded {
+  background: #06b800;
+  border-radius: 50%;
+  color: #ffffff;
+}
+
+.addButtonAdded:hover {
+  background: #05a000;
+}
+
+.addButtonAdded svg {
+  width: 20px;
+  height: 20px;
 }
 
 .content {
-  padding: 0 8px 16px;
+  padding: 0 30px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  flex: 1;
+  gap: 20px;
+  background: #ffffff;
 }
 
 .title {
+  font-family: 'Roboto', sans-serif;
   font-size: 32px;
-  font-weight: 400;
-  color: var(--text-primary);
-  margin: 0 0 16px 0;
+  font-weight: 500;
+  line-height: 110%;
+  letter-spacing: 0px;
+  color: #000000;
+  margin: 0;
 }
 
 .meta {
   display: flex;
   flex-direction: column;
+  gap: 12px;
+}
+
+.metaRow {
+  display: flex;
+  flex-direction: row;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .metaItem {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
+  font-family: 'Roboto', sans-serif;
   font-size: 16px;
-  color: var(--text-primary);
+  font-weight: 400;
+  line-height: 110%;
+  letter-spacing: 0px;
+  color: #000000;
+  background: #f2f2f2;
+  padding: 10px 14px;
+  border-radius: 50px;
+  width: fit-content;
 }
 
 .metaIcon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
-.difficulty {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 16px;
-  color: var(--text-primary);
-}
+/* Планшетная версия (769px - 1024px) */
+/* Стилистика мобильной версии с 2 колонками карточек */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .card {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    min-height: 420px;
+    border-radius: 28px;
+    gap: 22px;
+    padding-bottom: 18px;
+  }
 
-.difficultyBar {
-  display: flex;
-  gap: 4px;
-}
-
-.difficultyBarItem {
-  width: 6px;
-  height: 12px;
-  background: #2ea5fc;
-  border-radius: 2px;
-}
-
-@media (max-width: 768px) {
   .imageWrapper {
-    height: 180px;
+    height: 280px;
+    border-radius: 28px;
   }
 
   .content {
-    padding: 20px;
+    padding: 0 26px;
+    gap: 18px;
   }
 
   .title {
-    font-size: 18px;
+    font-size: 28px;
+  }
+
+  .meta {
+    gap: 10px;
+  }
+
+  .metaItem {
+    font-size: 16px;
+    padding: 10px 14px;
+  }
+
+  .metaIcon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .addButton {
+    width: 30px;
+    height: 30px;
+    top: 22px;
+    right: 22px;
+  }
+
+  .addButton img {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .card {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border-radius: 28px;
+    gap: 20px;
+    padding-bottom: 14px;
+  }
+
+  .imageWrapper {
+    height: 260px;
+    border-radius: 28px;
+  }
+
+  .content {
+    padding: 0 24px;
+    gap: 16px;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+
+  .meta {
+    gap: 10px;
+  }
+
+  .metaItem {
+    font-size: 15px;
+    padding: 9px 13px;
+  }
+
+  .metaIcon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .addButton {
+    width: 26px;
+    height: 26px;
+    top: 20px;
+    right: 20px;
+    padding: 0;
+  }
+
+  .addButton img {
+    width: 26px;
+    height: 26px;
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 26px;
+    gap: 18px;
+    padding-bottom: 12px;
+  }
+
+  .imageWrapper {
+    height: 240px;
+    border-radius: 26px;
+  }
+
+  .content {
+    padding: 0 20px;
+    gap: 14px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .meta {
+    gap: 8px;
+  }
+
+  .metaItem {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  .metaIcon {
+    width: 15px;
+    height: 15px;
+  }
+
+  .addButton {
+    width: 24px;
+    height: 24px;
+    top: 16px;
+    right: 16px;
+    padding: 0;
+  }
+
+  .addButton img {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+}
+
+/* Адаптивность для промежуточных разрешений мобильных */
+@media (min-width: 376px) and (max-width: 480px) {
+  .card {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .imageWrapper {
+    height: calc(70vw);
+    max-height: 280px;
+    min-height: 220px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .card {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .imageWrapper {
+    height: calc(60vw);
+    max-height: 300px;
+    min-height: 260px;
+  }
+}
+
+@media (max-width: 360px) {
+  .card {
+    border-radius: 24px;
+    gap: 16px;
+    padding-bottom: 10px;
+  }
+
+  .imageWrapper {
+    height: 220px;
+    border-radius: 24px;
+  }
+
+  .content {
+    padding: 0 18px;
+    gap: 12px;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .meta {
+    gap: 8px;
+  }
+
+  .metaItem {
+    font-size: 13px;
+    padding: 7px 11px;
+  }
+
+  .metaIcon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .addButton {
+    width: 22px;
+    height: 22px;
+    top: 14px;
+    right: 14px;
+  }
+
+  .addButton img {
+    width: 22px;
+    height: 22px;
   }
 }
